@@ -4,10 +4,11 @@ module MonthlyDates
     import Dates: UTInstant, value, Date, days
     using Printf
 
-    include("Quarter")
+    include("Quarter.jl")
 
     struct MonthlyDate <: TimeType
     	instant::UTInstant{Month}
+        MonthlyDate(v::UTInstant{Month}) = new(v)
     end
     UTm(x) = UTInstant(Month(x))
     function MonthlyDate(y::Int, m::Int = 1)
@@ -21,16 +22,16 @@ module MonthlyDates
     function (+)(dt::MonthlyDate, m::Month)
         oy, om = yearmonth(dt)
         y, m = divrem(om + value(m), 12)
-        MonthlyDate(oy + y, om + m)
+        MonthlyDate(oy + y, m)
     end
-    (+)(dt::MonthlyDate, p::Period) = dt + Month(p)
+    (+)(dt::MonthlyDate, p::Year) = dt + Month(p)
 
     function (-)(dt::MonthlyDate, m::Month)
         oy, om = yearmonth(dt)
         y, m = divrem(om - value(m), 12)
-        MonthlyDate(oy - y, om - m)
+        MonthlyDate(oy + y - 1, 12 + m)
     end
-    (-)(dt::MonthlyDate, p::Period) = dt - Month(p)
+    (-)(dt::MonthlyDate, p::Year) = dt - Month(p)
   
     function Base.convert(::Type{MonthlyDate}, dt::Date)
       MonthlyDate(yearmonth(dt)...)
@@ -38,6 +39,8 @@ module MonthlyDates
     function Base.convert(::Type{Date}, dt::MonthlyDate)
     	Date(1, 1, 1) + dt.instant.periods - Month(1)
     end
+
+    MonthlyDate(dt::TimeType) = convert(MonthlyDate, dt)
     
     function Base.print(io::IO, dt::MonthlyDate)
         y,m = yearmonth(days(dt))
@@ -49,6 +52,7 @@ module MonthlyDates
 
     struct QuarterlyDate <: TimeType
     	instant::UTInstant{Quarter}
+        QuarterlyDate(v::UTInstant{Quarter}) = new(v)
     end
     UTQ(x) = UTInstant(Quarter(x))
     function QuarterlyDate(y::Int, q::Int = 1)
@@ -63,7 +67,7 @@ module MonthlyDates
         oy = year(dt)
         oq = quarter(dt)
         y, q = divrem(oq + value(q), 4)
-        QuarterlyDate(oy + y, oq + q)
+        QuarterlyDate(oy + y, q)
     end
     (+)(dt::QuarterlyDate, p::Period) = dt + Quarter(p)
 
@@ -71,7 +75,7 @@ module MonthlyDates
         oy = year(dt)
         oq = quarter(dt)
         y, q = divrem(oq - value(q), 4)
-        QuarterlyDate(oy - y, oq - q)
+        QuarterlyDate(oy + y - 1, 4 + q)
     end
     (-)(dt::QuarterlyDate, p::Period) = dt - Quarter(p)
 
@@ -84,11 +88,14 @@ module MonthlyDates
     end
 
     function Base.convert(::Type{QuarterlyDate}, dt::MonthlyDate)
-        QuarterlyDate(UTQ(value(dt) ÷ 3))
+        QuarterlyDate(UTQ((value(dt) - 1) ÷ 3 + 1))
     end
     function Base.convert(::Type{MonthlyDate}, dt::QuarterlyDate)
-        MonthlyDate(UTM(value(dt) * 3))
+        MonthlyDate(UTm((value(dt) -1) * 3 + 1))
     end
+
+    QuarterlyDate(dt::TimeType) = convert(QuarterlyDate, dt)
+
 
     function Base.print(io::IO, dt::QuarterlyDate)
     	y,m = yearmonth(days(dt))
@@ -106,5 +113,7 @@ module MonthlyDates
         # Parsable output will have type info displayed, thus it is implied
         @eval Base.typeinfo_implicit(::Type{$date_type}) = true
     end
+
+    export quarter, Quarter, MonthlyDate, QuarterlyDate
 
 end

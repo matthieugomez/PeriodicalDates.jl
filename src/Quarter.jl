@@ -8,7 +8,8 @@ end
 function Base.convert(::Type{Month}, q::Quarter)
     Month(3 * (value(q)-1) + 1)
 end
-Base.convert(::Type{Quarter}, x::Month) = Month(Dates.divexact(value(x), 3))
+Base.convert(::Type{Quarter}, x::Month) = Quarter(Dates.divexact(value(x), 3))
+Base.convert(::Type{Quarter}, x::Year) = Quarter(value(x) *  4)
 Base.promote_rule(::Type{Quarter}, ::Type{Month}) = Month
 Base.hash(x::Quarter, h::UInt) = hash(3 * value(x), h + Dates.otherperiod_seed)
 Dates.toms(x::Quarter) = toms(Month(x))
