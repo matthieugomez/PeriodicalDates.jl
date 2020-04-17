@@ -1,0 +1,13 @@
+language: julia
+julia:
+- 1.2
+- 1.3
+- nightly
+matrix:
+  allow_failures:
+    - julia: nightly
+after_success:    
+- julia -e 'using Pkg; cd(Pkg.dir("MonthlyDates")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+notifications:
+  email: false
+  on_failure: change
