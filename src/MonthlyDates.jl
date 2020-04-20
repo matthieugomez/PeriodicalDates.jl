@@ -47,15 +47,11 @@ module MonthlyDates
     Base.promote_rule(::Type{MonthlyDate}, x::Type{Date}) = Date
     Base.promote_rule(::Type{MonthlyDate}, x::Type{DateTime}) = DateTime   
 
-    #accessor
-    Dates.day(dt::MonthlyDate) = day(Date(dt))
-    Dates.week(dt::MonthlyDate) = week(Date(dt))
+    #accessor (only rougher periods)    
     Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
     quarter(dt::MonthlyDate) = quarter(Date(dt))
     Dates.year(dt::MonthlyDate) =  1 + div(value(dt) - 1, 12)
 
-    Dates.Day(dt::MonthlyDate) = Day(day(dt))
-    Dates.Week(dt::MonthlyDate) = Week(week(dt))
     Dates.Month(dt::MonthlyDate) = Month(month(dt))
     Quarter(dt::MonthlyDate) = Quarter(quarter(dt))
     Dates.Year(dt::MonthlyDate) = Year(year(dt))
@@ -133,16 +129,9 @@ module MonthlyDates
     Base.promote_rule(::Type{QuarterlyDate}, x::Type{Date}) = Date
     Base.promote_rule(::Type{QuarterlyDate}, x::Type{DateTime}) = DateTime   
 
-    #accessor
-    Dates.day(dt::QuarterlyDate) = day(Date(dt))
-    Dates.week(dt::QuarterlyDate) = week(Date(dt))
-    Dates.month(dt::QuarterlyDate) = 1 + rem(value(dt) - 1, 4) * 3
+    #accessor (only rougher periods)
     quarter(dt::QuarterlyDate) = quarter(Date(dt))
     Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
-
-    Dates.Day(dt::QuarterlyDate) = Day(day(dt))
-    Dates.Week(dt::QuarterlyDate) = Week(week(dt))
-    Dates.Month(dt::QuarterlyDate) = Month(month(dt))
     Quarter(dt::QuarterlyDate) = Quarter(quarter(dt))
     Dates.Year(dt::QuarterlyDate) = Year(year(dt))
 

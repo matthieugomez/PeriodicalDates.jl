@@ -35,13 +35,10 @@ using Test, Dates, MonthlyDates
 @test year(MonthlyDate(1990, 12)) == 1990
 @test quarter(MonthlyDate(1990, 1)) == 1
 @test month(MonthlyDate(1990, 12)) == 12
-@test week(MonthlyDate(1990, 1)) == 1
-@test day(MonthlyDate(1990, 1)) == 1
-@test Day(MonthlyDate(1990, 1)) == Day(1)
-@test Week(MonthlyDate(1990, 1)) == Week(1)
-@test Month(MonthlyDate(1990, 1)) == Month(1)
-@test Quarter(MonthlyDate(1990, 1)) == Quarter(1)
+
 @test Year(MonthlyDate(1990, 1)) == Year(1990)
+@test Quarter(MonthlyDate(1990, 1)) == Quarter(1)
+@test Month(MonthlyDate(1990, 1)) == Month(1)
 
 # arithmetic
 @test MonthlyDate(1990, 1) + Year(3) == MonthlyDate(1993, 1)
@@ -90,16 +87,9 @@ using Test, Dates, MonthlyDates
 # accessor
 @test year(QuarterlyDate(1990, 4)) == 1990
 @test quarter(QuarterlyDate(1990, 4)) == 4
-@test month(QuarterlyDate(1990, 1)) == 1
-@test week(QuarterlyDate(1990, 1)) == 1
-@test day(QuarterlyDate(1990, 1)) == 1
 
 @test Year(QuarterlyDate(1990, 1)) == Year(1990)
 @test Quarter(QuarterlyDate(1990, 1)) == Quarter(1)
-@test Month(QuarterlyDate(1990, 1)) == Month(1)
-@test Week(QuarterlyDate(1990, 1)) == Week(1)
-@test Day(QuarterlyDate(1990, 1)) == Day(1)
-
 
 # arithmetic
 @test QuarterlyDate(1990, 1) + Year(1) == QuarterlyDate(1991, 1)
