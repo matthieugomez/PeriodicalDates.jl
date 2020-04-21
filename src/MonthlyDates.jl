@@ -166,7 +166,7 @@ module MonthlyDates
     Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
     ##############################################################################
     ##
-    ## Lag/Lead
+    ## Lag/Lead (experimental)
     ##
     ##############################################################################
     function lag(x::AbstractVector, period = 1, default = missing)
@@ -176,13 +176,13 @@ module MonthlyDates
         lag(x, -period, default)
     end
 
-    default_period(::Type{T}) where {T} = one(T)
-    default_period(::Type{DateTime}) = Millisecond(1)
-    default_period(::Type{Date}) = Day(1)
-    default_period(::Type{MonthlyDate}) = Month(1)
-    default_period(::Type{QuarterlyDate}) = Quarter(1)
+    period(::Type{T}) where {T} = one(T)
+    period(::Type{DateTime}) = Millisecond(1)
+    period(::Type{Date}) = Day(1)
+    period(::Type{MonthlyDate}) = Month(1)
+    period(::Type{QuarterlyDate}) = Quarter(1)
 
-    function lag(x::AbstractVector, dt::AbstractVector, period = default_period(eltype(dt)), default = missing)
+    function lag(x::AbstractVector, dt::AbstractVector, period = period(eltype(dt)), default = missing)
         inds = keys(dt)
         dtdict = Dict{eltype(dt),eltype(inds)}()
         for (val, ind) in zip(dt, inds)
@@ -191,7 +191,7 @@ module MonthlyDates
          end
          Union{eltype(x), typeof(default)}[(i = get(dtdict, v - period, nothing); i !== nothing ? x[i] : default) for v in dt]
     end
-    function lead(x::AbstractVector, dt::AbstractVector, period = default_period(eltype(dt)), default = missing)
+    function lead(x::AbstractVector, dt::AbstractVector, period = period(eltype(dt)), default = missing)
         lag(x, dt, -period, default)
     end
 
