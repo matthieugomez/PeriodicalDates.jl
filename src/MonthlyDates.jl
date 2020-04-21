@@ -84,7 +84,10 @@ module MonthlyDates
     else
         Base.show(io::IO, dt::MonthlyDate) = print(io, dt)
     end
-    Base.typeinfo_implicit(::Type{MonthlyDate}) = true
+    if VERSION >= v"1.1-"
+        Base.typeinfo_implicit(::Type{MonthlyDate}) = true
+    end
+
     ##############################################################################
     ##
     ## QuarterlyDate
@@ -163,7 +166,9 @@ module MonthlyDates
     else
         Base.show(io::IO, dt::QuarterlyDate) = print(io, dt)
     end
-    Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
+    if VERSION >= v"1.1-"
+        Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
+    end
     ##############################################################################
     ##
     ## Lag/Lead (experimental)
