@@ -79,8 +79,12 @@ module MonthlyDates
         print(io, "$(yy)m$mm")
     end
     Base.show(io::IO, ::MIME"text/plain", dt::MonthlyDate) = print(io, dt)
-    Base.show(io::IO, dt::MonthlyDate) = print(io, typeof(dt), "(\"", dt, "\")")
-
+    if VERSION >= v"1.5-"
+        Base.show(io::IO, dt::MonthlyDate) = print(io, MonthlyDate, "(\"", dt, "\")")
+    else
+        Base.show(io::IO, dt::MonthlyDate) = print(io, dt)
+    end
+    Base.typeinfo_implicit(::Type{MonthlyDate}) = true
     ##############################################################################
     ##
     ## QuarterlyDate
@@ -154,7 +158,42 @@ module MonthlyDates
         print(io, "$(yy)q$q")
     end
     Base.show(io::IO, ::MIME"text/plain", dt::QuarterlyDate) = print(io, dt)
-    Base.show(io::IO, dt::QuarterlyDate) = print(io, typeof(dt), "(\"", dt, "\")")
+    if VERSION >= v"1.5-"
+        Base.show(io::IO, dt::QuarterlyDate) = print(io, QuarterlyDate, "(\"", dt, "\")")
+    else
+        Base.show(io::IO, dt::QuarterlyDate) = print(io, dt)
+    end
+    Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
+    ##############################################################################
+    ##
+    ## Lag/Lead
+    ##
+    ##############################################################################
+    function lag(x::AbstractVector, period = 1, default = missing)
+        Union{eltype(x), typeof(default)}[checkbounds(Bool, x, i - period) ? x[i-period] : default for i in eachindex(x)]
+    end
+    function lead(x::AbstractVector, period = 1, default = missing)
+        lag(x, -period, default)
+    end
+
+    default_period(::Type{T}) where {T} = one(T)
+    default_period(::Type{DateTime}) = Millisecond(1)
+    default_period(::Type{Date}) = Day(1)
+    default_period(::Type{MonthlyDate}) = Month(1)
+    default_period(::Type{QuarterlyDate}) = Quarter(1)
+
+    function lag(x::AbstractVector, dt::AbstractVector, period = default_period(eltype(dt)), default = missing)
+        inds = keys(dt)
+        dtdict = Dict{eltype(dt),eltype(inds)}()
+        for (val, ind) in zip(dt, inds)
+             out = get!(dtdict, val, ind)
+             out != ind && error("Elements of dt must be distincts")
+         end
+         Union{eltype(x), typeof(default)}[(i = get(dtdict, v - period, nothing); i !== nothing ? x[i] : default) for v in dt]
+    end
+    function lead(x::AbstractVector, dt::AbstractVector, period = default_period(eltype(dt)), default = missing)
+        lag(x, dt, -period, default)
+    end
 
     export quarter, Quarter, MonthlyDate, QuarterlyDate
 
