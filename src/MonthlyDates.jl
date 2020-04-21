@@ -181,6 +181,8 @@ module MonthlyDates
         lag(x, -period, default)
     end
 
+
+    onestep(x::T) where {T}  = onestep(T)
     onestep(::Type{T}) where {T} = oneunit(T)
     onestep(::Type{DateTime}) = Millisecond(1)
     onestep(::Type{Date}) = Day(1)
