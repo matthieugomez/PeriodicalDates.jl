@@ -84,7 +84,7 @@ module MonthlyDates
     else
         Base.show(io::IO, dt::MonthlyDate) = print(io, dt)
     end
-    if VERSION >= v"1.1-"
+    if VERSION >= v"1.4-"
         Base.typeinfo_implicit(::Type{MonthlyDate}) = true
     end
 
@@ -166,7 +166,7 @@ module MonthlyDates
     else
         Base.show(io::IO, dt::QuarterlyDate) = print(io, dt)
     end
-    if VERSION >= v"1.1-"
+    if VERSION >= v"1.4-"
         Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
     end
     ##############################################################################
@@ -182,7 +182,7 @@ module MonthlyDates
     end
 
 
-    onestep(x::T) where {T}  = onestep(T)
+    onestep(x::T) where {T} = onestep(T)
     onestep(::Type{T}) where {T} = oneunit(T)
     onestep(::Type{DateTime}) = Millisecond(1)
     onestep(::Type{Date}) = Day(1)
