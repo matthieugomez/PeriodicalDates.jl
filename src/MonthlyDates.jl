@@ -44,10 +44,11 @@ module MonthlyDates
     Base.convert(::Type{Date}, dt::MonthlyDate) = Date(yearmonth(dt)...)
     Base.convert(::Type{DateTime}, dt::MonthlyDate) = DateTime(yearmonth(dt)...)
     Base.convert(::Type{Month}, dt::MonthlyDate) = Month(value(dt))
+   
     Base.promote_rule(::Type{MonthlyDate}, x::Type{Date}) = Date
     Base.promote_rule(::Type{MonthlyDate}, x::Type{DateTime}) = DateTime   
 
-    #accessor (only rougher periods)    
+    #accessor (only bigger periods)    
     Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
     quarter(dt::MonthlyDate) = quarter(Date(dt))
     Dates.year(dt::MonthlyDate) =  1 + div(value(dt) - 1, 12)
@@ -119,7 +120,6 @@ module MonthlyDates
         y, q = divrem(value(dt) - 1, 4)
         return 1 + y, 1 + q * 3
     end
-
     Base.convert(::Type{MonthlyDate}, dt::QuarterlyDate) = MonthlyDate(UTm(((value(dt) - 1) * 3 + 1)))
     Base.convert(::Type{Date}, dt::QuarterlyDate) = Date(yearmonth(dt)...)
     Base.convert(::Type{DateTime}, dt::QuarterlyDate) = DateTime(yearmonth(dt)...)
@@ -129,7 +129,7 @@ module MonthlyDates
     Base.promote_rule(::Type{QuarterlyDate}, x::Type{Date}) = Date
     Base.promote_rule(::Type{QuarterlyDate}, x::Type{DateTime}) = DateTime   
 
-    #accessor (only rougher periods)
+    #accessor (only bigger periods)
     quarter(dt::QuarterlyDate) = quarter(Date(dt))
     Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
     Quarter(dt::QuarterlyDate) = Quarter(quarter(dt))
