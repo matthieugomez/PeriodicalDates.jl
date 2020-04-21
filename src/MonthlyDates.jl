@@ -196,7 +196,7 @@ module MonthlyDates
          end
          Union{eltype(x), typeof(default)}[(i = get(dtdict, v - period, nothing); i !== nothing ? x[i] : default) for v in dt]
     end
-    function lead(x::AbstractVector, dt::AbstractVector, period = period(eltype(dt)), default = missing)
+    function lead(x::AbstractVector, dt::AbstractVector, period = onestep(eltype(dt)), default = missing)
         lag(x, dt, -period, default)
     end
 
