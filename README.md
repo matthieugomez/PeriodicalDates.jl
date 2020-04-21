@@ -2,7 +2,7 @@
 
 # MonthlyDates.jl
 
-This packages makes it easier to work with monthly or quarterly dates. It defines:
+This packages makes it easier to work with monthly or quarterly dates. It defines two types:
 
 
 - A `MonthlyDate <: TimeType` type
