@@ -192,7 +192,7 @@ module MonthlyDates
         dtdict = Dict{eltype(dt),eltype(inds)}()
         for (val, ind) in zip(dt, inds)
              out = get!(dtdict, val, ind)
-             out != ind && error("Elements of dt must be distincts")
+             out != ind && error("Elements of dt must be distinct")
          end
          Union{eltype(x), typeof(default)}[(i = get(dtdict, v - period, nothing); i !== nothing ? x[i] : default) for v in dt]
     end
