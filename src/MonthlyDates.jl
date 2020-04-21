@@ -181,13 +181,13 @@ module MonthlyDates
         lag(x, -period, default)
     end
 
-    period(::Type{T}) where {T} = oneunit(T)
-    period(::Type{DateTime}) = Millisecond(1)
-    period(::Type{Date}) = Day(1)
-    period(::Type{MonthlyDate}) = Month(1)
-    period(::Type{QuarterlyDate}) = Quarter(1)
+    onestep(::Type{T}) where {T} = oneunit(T)
+    onestep(::Type{DateTime}) = Millisecond(1)
+    onestep(::Type{Date}) = Day(1)
+    onestep(::Type{MonthlyDate}) = Month(1)
+    onestep(::Type{QuarterlyDate}) = Quarter(1)
 
-    function lag(x::AbstractVector, dt::AbstractVector, period = period(eltype(dt)), default = missing)
+    function lag(x::AbstractVector, dt::AbstractVector, period = onestep(eltype(dt)), default = missing)
         inds = keys(dt)
         dtdict = Dict{eltype(dt),eltype(inds)}()
         for (val, ind) in zip(dt, inds)
