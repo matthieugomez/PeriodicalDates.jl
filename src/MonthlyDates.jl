@@ -181,7 +181,7 @@ module MonthlyDates
         lag(x, -period, default)
     end
 
-    period(::Type{T}) where {T} = one(T)
+    period(::Type{T}) where {T} = oneunit(T)
     period(::Type{DateTime}) = Millisecond(1)
     period(::Type{Date}) = Day(1)
     period(::Type{MonthlyDate}) = Month(1)
