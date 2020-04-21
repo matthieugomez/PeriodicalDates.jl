@@ -108,20 +108,3 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 
 
 @test replstr([QuarterlyDate(1990, 1)]) == "1-element Array{QuarterlyDate,1}:\n 1990q1"
-
-
-##############################################################################
-##
-## Lag (experimental)
-##
-##############################################################################
-x = [4, 5, 6]
-@test all(MonthlyDates.lag(x, 1) .=== [missing, 4, 5])
-@test all(MonthlyDates.lag(x, 3) .=== [missing, missing, missing])
-date = [1989, 1991, 1992]
-@test all(MonthlyDates.lag(x, date) .=== [missing, missing, 5])
-date = [MonthlyDate(1989, 1), MonthlyDate(1989, 3), MonthlyDate(1989, 4)]
-@test all(MonthlyDates.lag(x, date) .=== [missing, missing, 5])
-@test all(MonthlyDates.lag(x, date, Month(5)) .=== [missing, missing, missing])
-date = [MonthlyDate(1989, 1), MonthlyDate(1989, 3), MonthlyDate(1989, 3)]
-@test_throws ErrorException MonthlyDates.lag(x, date)

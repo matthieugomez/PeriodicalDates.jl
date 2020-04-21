@@ -169,38 +169,6 @@ module MonthlyDates
     if VERSION >= v"1.4-"
         Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
     end
-    ##############################################################################
-    ##
-    ## Lag/Lead (experimental)
-    ##
-    ##############################################################################
-    function lag(x::AbstractVector, period = 1, default = missing)
-        Union{eltype(x), typeof(default)}[checkbounds(Bool, x, i - period) ? x[i-period] : default for i in eachindex(x)]
-    end
-    function lead(x::AbstractVector, period = 1, default = missing)
-        lag(x, -period, default)
-    end
-
-
-    onestep(x::T) where {T} = onestep(T)
-    onestep(::Type{T}) where {T} = oneunit(T)
-    onestep(::Type{DateTime}) = Millisecond(1)
-    onestep(::Type{Date}) = Day(1)
-    onestep(::Type{MonthlyDate}) = Month(1)
-    onestep(::Type{QuarterlyDate}) = Quarter(1)
-
-    function lag(x::AbstractVector, dt::AbstractVector, period = onestep(eltype(dt)), default = missing)
-        inds = keys(dt)
-        dtdict = Dict{eltype(dt),eltype(inds)}()
-        for (val, ind) in zip(dt, inds)
-             out = get!(dtdict, val, ind)
-             out != ind && error("Elements of dt must be distinct")
-         end
-         Union{eltype(x), typeof(default)}[(i = get(dtdict, v - period, nothing); i !== nothing ? x[i] : default) for v in dt]
-    end
-    function lead(x::AbstractVector, dt::AbstractVector, period = onestep(eltype(dt)), default = missing)
-        lag(x, dt, -period, default)
-    end
 
     export quarter, Quarter, MonthlyDate, QuarterlyDate
 
