@@ -28,7 +28,8 @@ module MonthlyDates
     Construct a `MonthlyDate` type by parts.
     """
     MonthlyDate(y::Int, m::Int = 1) = MonthlyDate(UTm(12 * (y - 1) + m))
-
+    MonthlyDate(y::Year, m::Month = Month(1)) = MonthlyDate(value(y), value(m))
+    MonthlyDate(y, m = 1) = QuarterlyDate(Int64(y), Int64(m))
     """
     `MonthlyDate(dt::Date) -> MonthlyDate`
     
@@ -47,6 +48,9 @@ module MonthlyDates
    
     Base.promote_rule(::Type{MonthlyDate}, x::Type{Date}) = Date
     Base.promote_rule(::Type{MonthlyDate}, x::Type{DateTime}) = DateTime   
+
+    Dates.eps(::Type{MonthlyDate}) = Month(1)
+    Dates.zero(::Type{MonthlyDate}) = Month(0)
 
     #accessor (only bigger periods)    
     Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
@@ -111,6 +115,8 @@ module MonthlyDates
     Construct a `QuaterlyDate` type by parts.
     """
     QuarterlyDate(y::Int, q::Int = 1) = QuarterlyDate(UTQ(4 * (y - 1) + q))
+    QuarterlyDate(y::Year, q::Quarter = Quarter(1)) = QuarterlyDate(value(y), value(q))
+    QuarterlyDate(y, q = 1) = QuarterlyDate(Int64(y), Int64(q))
 
     """
     `QuarterlyDate(dt::Date) -> QuarterlyDate`
@@ -135,6 +141,9 @@ module MonthlyDates
     Base.promote_rule(::Type{QuarterlyDate}, x::Type{MonthlyDate}) = MonthlyDate
     Base.promote_rule(::Type{QuarterlyDate}, x::Type{Date}) = Date
     Base.promote_rule(::Type{QuarterlyDate}, x::Type{DateTime}) = DateTime   
+
+    Dates.eps(::Type{QuarterlyDate}) = Quarter(1)
+    Dates.zero(::Type{QuarterlyDate}) = Quarter(0)
 
     #accessor (only bigger periods)
     quarter(dt::QuarterlyDate) = quarter(Date(dt))
