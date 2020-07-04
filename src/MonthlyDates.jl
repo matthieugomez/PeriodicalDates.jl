@@ -3,7 +3,9 @@ module MonthlyDates
     import Dates: UTInstant, value
     using Printf
 
-    include("Quarter.jl")
+    if !isdefined(Dates, :Quarter)
+        include("Quarter.jl")
+    end
 
     ##############################################################################
     ##
@@ -179,6 +181,6 @@ module MonthlyDates
         Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
     end
 
-    export quarter, Quarter, MonthlyDate, QuarterlyDate
+    export MonthlyDate, QuarterlyDate
 
 end

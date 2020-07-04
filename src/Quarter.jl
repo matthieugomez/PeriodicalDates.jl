@@ -1,3 +1,4 @@
+
 """
 `Quarter(v) -> Quarter`
 
@@ -66,5 +67,8 @@ The quarter part of a `TimeType` as a `Quarter`
 """
 quarter(dt::Date) = (month(dt) - 1) ÷ 3 + 1
 quarter(dt::DateTime) = (month(dt) - 1) ÷ 3 + 1
+
+export Quarter
+
 
 
