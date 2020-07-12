@@ -9,7 +9,7 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 ##############################################################################
 
 @test Quarter(Date(1990, 1)) == Quarter(1)
-@test quarter(Date(1990, 1)) == 1
+@test quarterofyear(Date(1990, 1)) == 1
 @test Month(Quarter(3)) == Month(9)
 @test_throws InexactError Quarter(Month(4))
 
@@ -35,7 +35,7 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 
 # accessor
 @test year(MonthlyDate(1990, 12)) == 1990
-@test quarter(MonthlyDate(1990, 1)) == 1
+@test quarterofyear(MonthlyDate(1990, 1)) == 1
 @test month(MonthlyDate(1990, 12)) == 12
 
 @test Year(MonthlyDate(1990, 1)) == Year(1990)
@@ -90,7 +90,7 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 
 # accessor
 @test year(QuarterlyDate(1990, 4)) == 1990
-@test quarter(QuarterlyDate(1990, 4)) == 4
+@test quarterofyear(QuarterlyDate(1990, 4)) == 4
 
 @test Year(QuarterlyDate(1990, 1)) == Year(1990)
 @test Quarter(QuarterlyDate(1990, 1)) == Quarter(1)
