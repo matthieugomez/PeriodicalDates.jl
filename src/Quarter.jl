@@ -57,16 +57,8 @@ Base.show(io::IO, q::Quarter) = print(io, q)
 
 The quarter part of a `TimeType` as a `Quarter`
 """
-Quarter(dt::Date) = Quarter(quarter(dt))
-Quarter(dt::DateTime) = Quarter(quarter(dt))
-
-"""
-`quarter(dt::TimeType) -> Int64`
-
-The quarter part of a `TimeType` as a `Quarter`
-"""
-quarter(dt::Date) = (month(dt) - 1) ÷ 3 + 1
-quarter(dt::DateTime) = (month(dt) - 1) ÷ 3 + 1
+Quarter(dt::Date) = Quarter(quarterofyear(dt))
+Quarter(dt::DateTime) = Quarter(quarterofyear(dt))
 
 export Quarter
 

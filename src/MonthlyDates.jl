@@ -1,11 +1,14 @@
 module MonthlyDates
     using Dates
-    import Dates: UTInstant, value
+    import Dates: UTInstant, value, quarterofyear
     using Printf
 
     if !isdefined(Dates, :Quarter)
         include("Quarter.jl")
     end
+
+
+
 
     ##############################################################################
     ##
@@ -56,11 +59,11 @@ module MonthlyDates
 
     #accessor (only bigger periods)    
     Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
-    quarter(dt::MonthlyDate) = quarter(Date(dt))
+    quarterofyear(dt::MonthlyDate) = quarterofyear(Date(dt))
     Dates.year(dt::MonthlyDate) =  1 + div(value(dt) - 1, 12)
 
     Dates.Month(dt::MonthlyDate) = Month(month(dt))
-    Quarter(dt::MonthlyDate) = Quarter(quarter(dt))
+    Quarter(dt::MonthlyDate) = Quarter(quarterofyear(dt))
     Dates.Year(dt::MonthlyDate) = Year(year(dt))
 
     # arithmetics
@@ -127,8 +130,8 @@ module MonthlyDates
     """
     QuarterlyDate(dt::TimeType) = convert(QuarterlyDate, dt)
     Base.convert(::Type{QuarterlyDate}, dt::MonthlyDate) = QuarterlyDate(UTQ(((value(dt) - 1) ÷ 3 + 1)))
-    Base.convert(::Type{QuarterlyDate}, dt::Date) = QuarterlyDate(year(dt), quarter(dt))
-    Base.convert(::Type{QuarterlyDate}, dt::DateTime) = QuarterlyDate(year(dt), quarter(dt))
+    Base.convert(::Type{QuarterlyDate}, dt::Date) = QuarterlyDate(year(dt), quarterofyear(dt))
+    Base.convert(::Type{QuarterlyDate}, dt::DateTime) = QuarterlyDate(year(dt), quarterofyear(dt))
     Base.convert(::Type{QuarterlyDate}, x::Quarter) = QuarterlyDate(UTInstant(x))
 
     function Dates.yearmonth(dt::QuarterlyDate)
@@ -148,9 +151,9 @@ module MonthlyDates
     Dates.zero(::Type{QuarterlyDate}) = Quarter(0)
 
     #accessor (only bigger periods)
-    quarter(dt::QuarterlyDate) = quarter(Date(dt))
+    quarterofyear(dt::QuarterlyDate) = quarterofyear(Date(dt))
     Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
-    Quarter(dt::QuarterlyDate) = Quarter(quarter(dt))
+    Quarter(dt::QuarterlyDate) = Quarter(quarterofyear(dt))
     Dates.Year(dt::QuarterlyDate) = Year(year(dt))
 
     # arithmetics
