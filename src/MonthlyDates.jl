@@ -5,6 +5,8 @@ module MonthlyDates
 
     if !isdefined(Dates, :Quarter)
         include("Quarter.jl")
+    else
+        import Dates: Quarter
     end
 
 
