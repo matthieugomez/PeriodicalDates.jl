@@ -34,6 +34,11 @@ module MonthlyDates
     MonthlyDate(y::Int, m::Int = 1) = MonthlyDate(UTm(12 * (y - 1) + m))
     MonthlyDate(y::Year, m::Month = Month(1)) = MonthlyDate(value(y), value(m))
     MonthlyDate(y, m = 1) = MonthlyDate(Int64(y), Int64(m))
+
+
+
+
+
     """
     `MonthlyDate(dt::Date) -> MonthlyDate`
     
@@ -80,11 +85,28 @@ module MonthlyDates
     Dates.guess(a::MonthlyDate, b::MonthlyDate, c) = Int64(div(value(b - a), months(c)))
 
     # io
+    function parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat)
+        MonthlyDate(parse(Date, s, df))
+    end
+
+    function MonthlyDate(d::AbstractString, format::AbstractString; 
+        locale::Dates.Locale = Dates.ENGLISH)
+        parse(MonthlyDate, d, DateFormat(format, locale))
+    end
+
+    MonthlyDateFormat = dateformat"yyyy-mm"
+
+    function MonthlyDate(d::AbstractString, format::DateFormat = MonthlyDateFormat)
+        parse(MonthlyDate, d, format)
+    end
+
+
+
     function Base.print(io::IO, dt::MonthlyDate)
         y,m = yearmonth(dt)
         yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
         mm = lpad(m, 2, "0")
-        print(io, "$(yy)m$mm")
+        print(io, "$(yy)-$mm")
     end
     Base.show(io::IO, ::MIME"text/plain", dt::MonthlyDate) = print(io, dt)
     if VERSION >= v"1.5-"
@@ -167,11 +189,27 @@ module MonthlyDates
     Dates.guess(a::QuarterlyDate, b::QuarterlyDate, c) = Int64(div(value(b - a), quarters(c)))
 
     # io
+    function parse(::Type{QuarterlyDate}, s::AbstractString, df::DateFormat)
+        QuarterlyDate(parse(Date, s, df))
+    end
+
+
+    function QuarterlyDate(d::AbstractString, format::AbstractString; 
+        locale::Dates.Locale = Dates.ENGLISH)
+        parse(QuaterlyDate, d,  DateFormat(format, locale))
+    end
+
+    function QuarterlyDate(d::AbstractString, format::DateFormat = ISODateFormat)
+        parse(QuaterlyDate, d, format)
+    end
+
+
+
     function Base.print(io::IO, dt::QuarterlyDate)
         y,m = yearmonth(dt)
         yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
         q = (m - 1) ÷ 3 + 1
-        print(io, "$(yy)q$q")
+        print(io, "$(yy)-Q$q")
     end
     Base.show(io::IO, ::MIME"text/plain", dt::QuarterlyDate) = print(io, dt)
     if VERSION >= v"1.5-"
