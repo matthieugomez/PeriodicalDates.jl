@@ -115,11 +115,9 @@ module MonthlyDates
 
     #Plot
     # Issue is that I would like to choose ticks myself. Or at least convert depending on whether all ticks are Integer or not, which is not possible
-   @recipe function f(::Type{MonthlyDate}, x::MonthlyDate)
-   (value, x -> string(MonthlyDate(UTm(floor(Int, x)))))
-   end
-
-    # using Revise, Plots, MonthlyDates ; d = [MonthlyDate(1990, 2), MonthlyDate(1990)] ; x = [1, 2] ; pgfplotsx(); d2 = MonthlyDate.(["1990-01", "1990-02", "1990-03", "1990-04"]) ; x2 = [1, 2, 3, 4]
+    @recipe function f(::Type{MonthlyDate}, x::MonthlyDate)
+	   (value, x -> string(MonthlyDate(UTm(floor(Int, x)))))
+	end
 
     ##############################################################################
     ##
