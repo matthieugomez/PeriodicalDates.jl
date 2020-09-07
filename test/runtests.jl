@@ -21,6 +21,8 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 
 # since Dates.value(Date(1, 1, 1)) == 1
 @test Dates.value(MonthlyDate(1, 1)) == 1
+@test Dates.value(MonthlyDate(1.0, 1.0)) == 1
+
 @test MonthlyDate(1990, 1) >= MonthlyDate(1989, 1)
 @test Date(MonthlyDate(Date(1990, 1))) == Date(1990, 1)
 @test Date(MonthlyDate(1990, 1)) == Date(1990, 1)
