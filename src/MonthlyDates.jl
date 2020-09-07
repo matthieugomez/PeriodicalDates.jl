@@ -1,16 +1,13 @@
 module MonthlyDates
+    using Printf
     using Dates
     import Dates: UTInstant, value, quarterofyear
-    using Printf
-
-    if !isdefined(Dates, :Quarter)
-        include("Quarter.jl")
-    else
+    # Quarter defined in Julia 1.6
+    if isdefined(Dates, :Quarter)
         import Dates: Quarter
+    else
+        include("Quarter.jl")
     end
-
-
-
 
     ##############################################################################
     ##
@@ -36,7 +33,7 @@ module MonthlyDates
     """
     MonthlyDate(y::Int, m::Int = 1) = MonthlyDate(UTm(12 * (y - 1) + m))
     MonthlyDate(y::Year, m::Month = Month(1)) = MonthlyDate(value(y), value(m))
-    MonthlyDate(y, m = 1) = QuarterlyDate(Int64(y), Int64(m))
+    MonthlyDate(y, m = 1) = MonthlyDate(Int64(y), Int64(m))
     """
     `MonthlyDate(dt::Date) -> MonthlyDate`
     
