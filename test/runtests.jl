@@ -63,6 +63,11 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 
 # print
 @test replstr([MonthlyDate(1990, 1)]) == "1-element $(string(Array{MonthlyDate,1})):\n 1990-01"
+
+@test MonthlyDate("1990-01") == MonthlyDate(1990, 1)
+@test MonthlyDate("1990/01", "y/m") == MonthlyDate(1990, 1)
+@test MonthlyDate("1990m01", dateformat"y\mm") == MonthlyDate(1990, 1)
+
 ##############################################################################
 ##
 ## QuarterlyDate

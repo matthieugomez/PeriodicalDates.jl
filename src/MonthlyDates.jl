@@ -2,6 +2,7 @@ module MonthlyDates
     using Printf
     using Dates
     import Dates: UTInstant, value, quarterofyear
+    using RecipesBase: RecipesBase, @recipe
     # Quarter defined in Julia 1.6
     if isdefined(Dates, :Quarter)
         import Dates: Quarter
@@ -34,10 +35,6 @@ module MonthlyDates
     MonthlyDate(y::Int, m::Int = 1) = MonthlyDate(UTm(12 * (y - 1) + m))
     MonthlyDate(y::Year, m::Month = Month(1)) = MonthlyDate(value(y), value(m))
     MonthlyDate(y, m = 1) = MonthlyDate(Int64(y), Int64(m))
-
-
-
-
 
     """
     `MonthlyDate(dt::Date) -> MonthlyDate`
@@ -85,7 +82,7 @@ module MonthlyDates
     Dates.guess(a::MonthlyDate, b::MonthlyDate, c) = Int64(div(value(b - a), months(c)))
 
     # io
-    function parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat)
+    function Base.parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat)
         MonthlyDate(parse(Date, s, df))
     end
 
@@ -94,13 +91,9 @@ module MonthlyDates
         parse(MonthlyDate, d, DateFormat(format, locale))
     end
 
-    MonthlyDateFormat = dateformat"yyyy-mm"
-
-    function MonthlyDate(d::AbstractString, format::DateFormat = MonthlyDateFormat)
+    function MonthlyDate(d::AbstractString, format::DateFormat = ISODateFormat)
         parse(MonthlyDate, d, format)
     end
-
-
 
     function Base.print(io::IO, dt::MonthlyDate)
         y,m = yearmonth(dt)
@@ -108,7 +101,9 @@ module MonthlyDates
         mm = lpad(m, 2, "0")
         print(io, "$(yy)-$mm")
     end
+
     Base.show(io::IO, ::MIME"text/plain", dt::MonthlyDate) = print(io, dt)
+
     if VERSION >= v"1.5-"
         Base.show(io::IO, dt::MonthlyDate) = print(io, MonthlyDate, "(\"", dt, "\")")
     else
@@ -116,6 +111,11 @@ module MonthlyDates
     end
     if VERSION >= v"1.4-"
         Base.typeinfo_implicit(::Type{MonthlyDate}) = true
+    end
+
+    #Plot
+    @recipe function f(xs::AbstractVector{<:MonthlyDate}, ys)
+        Date.(xs), ys
     end
 
     ##############################################################################
@@ -189,10 +189,9 @@ module MonthlyDates
     Dates.guess(a::QuarterlyDate, b::QuarterlyDate, c) = Int64(div(value(b - a), quarters(c)))
 
     # io
-    function parse(::Type{QuarterlyDate}, s::AbstractString, df::DateFormat)
+    function Base.parse(::Type{QuarterlyDate}, s::AbstractString, df::DateFormat)
         QuarterlyDate(parse(Date, s, df))
     end
-
 
     function QuarterlyDate(d::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
@@ -203,22 +202,28 @@ module MonthlyDates
         parse(QuaterlyDate, d, format)
     end
 
-
-
     function Base.print(io::IO, dt::QuarterlyDate)
         y,m = yearmonth(dt)
         yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
         q = (m - 1) ÷ 3 + 1
         print(io, "$(yy)-Q$q")
     end
+   
     Base.show(io::IO, ::MIME"text/plain", dt::QuarterlyDate) = print(io, dt)
+   
     if VERSION >= v"1.5-"
         Base.show(io::IO, dt::QuarterlyDate) = print(io, QuarterlyDate, "(\"", dt, "\")")
     else
         Base.show(io::IO, dt::QuarterlyDate) = print(io, dt)
     end
+  
     if VERSION >= v"1.4-"
         Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
+    end
+
+    #Plot
+    @recipe function f(xs::AbstractVector{<:QuarterlyDate}, ys)
+        Date.(xs), ys
     end
 
     export MonthlyDate, QuarterlyDate
