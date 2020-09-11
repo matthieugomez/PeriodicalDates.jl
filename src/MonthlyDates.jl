@@ -85,6 +85,7 @@ module MonthlyDates
     function Base.parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat)
         MonthlyDate(parse(Date, s, df))
     end
+    Dates.default_format(::Type{MonthlyDate}) = dateformat"yyyy-mm"
 
     function MonthlyDate(d::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
@@ -104,6 +105,8 @@ module MonthlyDates
 
     Base.show(io::IO, ::MIME"text/plain", dt::MonthlyDate) = print(io, dt)
 
+
+
     if VERSION >= v"1.5-"
         Base.show(io::IO, dt::MonthlyDate) = print(io, MonthlyDate, "(\"", dt, "\")")
     else
@@ -115,8 +118,8 @@ module MonthlyDates
 
     #Plot
     # Issue is that I would like to choose ticks myself. Or at least convert depending on whether all ticks are Integer or not, which is not possible
-    @recipe function f(::Type{MonthlyDate}, x::MonthlyDate)
-	   (value, x -> string(MonthlyDate(UTm(floor(Int, x)))))
+    @recipe function f(::Type{MonthlyDate}, dt::MonthlyDate)
+	   (value, dt -> string(MonthlyDate(UTm(round(dt)))))
 	end
 
     ##############################################################################
@@ -173,6 +176,7 @@ module MonthlyDates
     Dates.zero(::Type{QuarterlyDate}) = Quarter(0)
 
     #accessor (only bigger periods)
+    Dates.month(dt::QuarterlyDate) = 3 * (quarterofyear(dt) - 1) + 1
     quarterofyear(dt::QuarterlyDate) = quarterofyear(Date(dt))
     Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
     Quarter(dt::QuarterlyDate) = Quarter(quarterofyear(dt))
@@ -193,14 +197,15 @@ module MonthlyDates
     function Base.parse(::Type{QuarterlyDate}, s::AbstractString, df::DateFormat)
         QuarterlyDate(parse(Date, s, df))
     end
+    Dates.default_format(::Type{QuarterlyDate}) = dateformat"yyyy-mm"
 
     function QuarterlyDate(d::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
-        parse(QuaterlyDate, d,  DateFormat(format, locale))
+        parse(QuarterlyDate, d,  DateFormat(format, locale))
     end
 
     function QuarterlyDate(d::AbstractString, format::DateFormat = ISODateFormat)
-        parse(QuaterlyDate, d, format)
+        parse(QuarterlyDate, d, format)
     end
 
     function Base.print(io::IO, dt::QuarterlyDate)
@@ -224,7 +229,7 @@ module MonthlyDates
 
     #Plot
     @recipe function f(::Type{QuarterlyDate}, x::QuarterlyDate)
-    	(value, x -> string(Quarterly(UTQ(floor(Int, x)))))
+        (value, dt -> string(QuarterlyDate(UTQ(round(dt)))))
     end
 
     export MonthlyDate, QuarterlyDate

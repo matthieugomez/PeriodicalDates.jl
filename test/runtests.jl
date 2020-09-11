@@ -1,4 +1,4 @@
-using Test, Dates, MonthlyDates
+using Test, Dates, CSV, MonthlyDates
 
 replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :displaysize => (24, 80), kv...), MIME("text/plain"), x), x)
 
@@ -64,10 +64,18 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 # print
 @test replstr([MonthlyDate(1990, 1)]) == "1-element $(string(Array{MonthlyDate,1})):\n 1990-01"
 
+
+# parse
 @test MonthlyDate("1990-01") == MonthlyDate(1990, 1)
 @test MonthlyDate("1990/01", "y/m") == MonthlyDate(1990, 1)
 @test MonthlyDate("1990m01", dateformat"y\mm") == MonthlyDate(1990, 1)
 
+
+# csv
+io = IOBuffer()
+df = (x = [MonthlyDate(1990, 1), MonthlyDate(1990, 2)], )
+CSV.write(io, df) 
+String(take!(io)) == "x\n1990-01\n1990-02\n"
 ##############################################################################
 ##
 ## QuarterlyDate
@@ -112,6 +120,17 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 # ranges
 @test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1991, 1), step = Quarter(1))) == 5
 @test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1991, 1), step = Quarter(2))) == 3
-
-
 @test replstr([QuarterlyDate(1990, 1)]) == "1-element $(string(Array{QuarterlyDate,1})):\n 1990-Q1"
+
+# parse
+@test QuarterlyDate("1990-01") == QuarterlyDate(1990, 1)
+@test QuarterlyDate("1990/01", "y/m") == QuarterlyDate(1990, 1)
+@test QuarterlyDate("1990m01", dateformat"y\mm") == QuarterlyDate(1990, 1)
+
+
+
+# csv
+io = IOBuffer()
+df = (x = [QuarterlyDate(1990, 1), QuarterlyDate(1990, 2)], )
+CSV.write(io, df) 
+String(take!(io)) == "x\n1990-01\n1990-04\n"
