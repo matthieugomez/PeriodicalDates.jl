@@ -18,6 +18,9 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 ## MonthlyDate
 ##
 ##############################################################################
+# constructur
+@test_throws ArgumentError MonthlyDate(1, 0)
+@test_throws ArgumentError MonthlyDate(1, 13)
 
 # since Dates.value(Date(1, 1, 1)) == 1
 @test Dates.value(MonthlyDate(1, 1)) == 1
@@ -87,6 +90,9 @@ String(take!(io)) == "x\n1990-01\n1990-02\n"
 ## QuarterlyDate
 ##
 ##############################################################################
+# constructur
+@test_throws ArgumentError QuarterlyDate(1, 0)
+@test_throws ArgumentError QuarterlyDate(1, 5)
 
 @test Dates.value(QuarterlyDate(1, 1)) == 1
 @test QuarterlyDate(1990, 1) - QuarterlyDate(1989, 1) == Quarter(4)

@@ -32,7 +32,10 @@ module MonthlyDates
 
     Construct a `MonthlyDate` type by parts.
     """
-    MonthlyDate(y::Int, m::Int = 1) = MonthlyDate(UTm(12 * (y - 1) + m))
+    function MonthlyDate(y::Int, m::Int = 1)
+        1 <= m <= 12 || throw(ArgumentError("Month: $m out of range (1:12)"))
+        MonthlyDate(UTm(12 * (y - 1) + m))
+    end
     MonthlyDate(y::Year, m::Month = Month(1)) = MonthlyDate(value(y), value(m))
     MonthlyDate(y, m = 1) = MonthlyDate(Int64(y), Int64(m))
 
@@ -150,7 +153,10 @@ module MonthlyDates
     
     Construct a `QuaterlyDate` type by parts.
     """
-    QuarterlyDate(y::Int, q::Int = 1) = QuarterlyDate(UTQ(4 * (y - 1) + q))
+    function QuarterlyDate(y::Int, q::Int = 1)
+        1 <= q <= 4 || throw(ArgumentError("Quarter: $q out of range (1:4)"))
+        QuarterlyDate(UTQ(4 * (y - 1) + q))
+    end
     QuarterlyDate(y::Year, q::Quarter = Quarter(1)) = QuarterlyDate(value(y), value(q))
     QuarterlyDate(y, q = 1) = QuarterlyDate(Int64(y), Int64(q))
 
