@@ -11,12 +11,12 @@ This packages makes it easier to work with monthly or quarterly dates. It define
 	julia> dt = Date(1990, 1)
 	# 1990-01-01
 	julia> dtm = MonthlyDate(dt)
-	# 1990m01
+	# 1990-01
 	# Alternatively, use the MonthlyDate constructor:
 	julia> dtm = MonthlyDate(1990, 1)
-	# 1990m01
+	# 1990-01
 	julia> dtm + Month(1)
-	# 1991m01
+	# 1990-02
 	julia> Date(dtm)
 	# 1990-01-01
 
@@ -28,12 +28,12 @@ This packages makes it easier to work with monthly or quarterly dates. It define
 	julia> dt = Date(1990, 1)
 	# 1990-01-01
 	julia> dtq = QuarterlyDate(dt)
-	# 1990q1
+	# 1990-Q1
 	# Alternatively, use the QuarterlyDate constructor:
 	julia> dtq = QuarterlyDate(1990, 1)
-	# 1990q1
+	# 1990-Q1
 	julia> dtq + Quarter(3)
-	# 1991q4
+	# 1990-Q4
 	julia> Date(dtq)
 	# 1990-01-01
 	```
