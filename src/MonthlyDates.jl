@@ -61,10 +61,7 @@ module MonthlyDates
     #accessor (only bigger periods)    
     Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
     Dates.year(dt::MonthlyDate) =  1 + div(value(dt) - 1, 12)
-    function Dates.quarterofyear(dt::MonthlyDate)
-        m = month(dt)
-        m <= 3 ? 1 : m <= 6 ? 2 : m <= 9 ? 3 : 4
-    end
+    Dates.quarterofyear(dt::MonthlyDate) = 1 + div(month(dt) - 1, 3)
 
     Dates.Month(dt::MonthlyDate) = Month(month(dt))
     Quarter(dt::MonthlyDate) = Quarter(quarterofyear(dt))
