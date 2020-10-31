@@ -1,7 +1,7 @@
 module MonthlyDates
     using Printf
     using Dates
-    import Dates: UTInstant, value, quarterofyear, DatePart
+    import Dates: UTInstant, value, DatePart
     using RecipesBase: RecipesBase, @recipe
     # Quarter defined in Julia 1.6
     if isdefined(Dates, :Quarter)
@@ -33,7 +33,10 @@ module MonthlyDates
 
     Construct a `MonthlyDate` type by parts.
     """
-    MonthlyDate(y::Int, m::Int = 1) = MonthlyDate(UTm(12 * (y - 1) + m))
+    function MonthlyDate(y::Int, m::Int = 1)
+        1 <= m <= 12 || throw(ArgumentError("Month: $m out of range (1:12)"))
+        MonthlyDate(UTm(12 * (y - 1) + m))
+    end
     MonthlyDate(y::Year, m::Month = Month(1)) = MonthlyDate(value(y), value(m))
     MonthlyDate(y, m = 1) = MonthlyDate(Int64(y), Int64(m))
 
@@ -61,8 +64,8 @@ module MonthlyDates
 
     #accessor (only bigger periods)    
     Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
-    quarterofyear(dt::MonthlyDate) = quarterofyear(Date(dt))
     Dates.year(dt::MonthlyDate) =  1 + div(value(dt) - 1, 12)
+    Dates.quarterofyear(dt::MonthlyDate) = 1 + div(month(dt) - 1, 3)
 
     Dates.Month(dt::MonthlyDate) = Month(month(dt))
     Quarter(dt::MonthlyDate) = Quarter(quarterofyear(dt))
@@ -81,6 +84,12 @@ module MonthlyDates
     months(dt::Quarter) = 4 * value(dt)
     months(dt::Year) = 12 * value(dt)
     Dates.guess(a::MonthlyDate, b::MonthlyDate, c) = Int64(div(value(b - a), months(c)))
+
+    # adjusters
+    Dates.firstdayofquarter(dt::MonthlyDate) = Dates.firstdayofquarter(Date(dt))
+    Dates.lastdayofquarter(dt::MonthlyDate) = Dates.lastdayofquarter(Date(dt))
+    Dates.firstdayofmonth(dt::MonthlyDate) = Date(dt)
+    Dates.lastdayofmonth(dt::MonthlyDate) = Dates.lastdayofmonth(Date(dt))
 
     # io
     function Base.parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat)
@@ -146,7 +155,10 @@ module MonthlyDates
     
     Construct a `QuaterlyDate` type by parts.
     """
-    QuarterlyDate(y::Int, q::Int = 1) = QuarterlyDate(UTQ(4 * (y - 1) + q))
+    function QuarterlyDate(y::Int, q::Int = 1)
+        1 <= q <= 4 || throw(ArgumentError("Quarter: $q out of range (1:4)"))
+        QuarterlyDate(UTQ(4 * (y - 1) + q))
+    end
     QuarterlyDate(y::Year, q::Quarter = Quarter(1)) = QuarterlyDate(value(y), value(q))
     QuarterlyDate(y, q = 1) = QuarterlyDate(Int64(y), Int64(q))
 
@@ -163,7 +175,7 @@ module MonthlyDates
 
     function Dates.yearmonth(dt::QuarterlyDate)
         y, q = divrem(value(dt) - 1, 4)
-        return 1 + y, 1 + q * 3
+        return 1 + y, 1 + 3 * q
     end
     Base.convert(::Type{MonthlyDate}, dt::QuarterlyDate) = MonthlyDate(UTm(((value(dt) - 1) * 3 + 1)))
     Base.convert(::Type{Date}, dt::QuarterlyDate) = Date(yearmonth(dt)...)
@@ -178,9 +190,9 @@ module MonthlyDates
     Dates.zero(::Type{QuarterlyDate}) = Quarter(0)
 
     #accessor (only bigger periods)
-    Dates.month(dt::QuarterlyDate) = 3 * (quarterofyear(dt) - 1) + 1
-    quarterofyear(dt::QuarterlyDate) = quarterofyear(Date(dt))
+    Dates.month(dt::QuarterlyDate) = 1 + 3 * rem(value(dt) - 1, 4)
     Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
+    Dates.quarterofyear(dt::QuarterlyDate) = 1 + rem(value(dt) - 1, 4)
     Quarter(dt::QuarterlyDate) = Quarter(quarterofyear(dt))
     Dates.Year(dt::QuarterlyDate) = Year(year(dt))
 
@@ -195,6 +207,10 @@ module MonthlyDates
     quarters(dt::Year) = 4 * value(dt)
     Dates.guess(a::QuarterlyDate, b::QuarterlyDate, c) = Int64(div(value(b - a), quarters(c)))
 
+    # adjusters
+    Dates.firstdayofquarter(dt::QuarterlyDate) = Date(dt)
+    Dates.lastdayofquarter(dt::QuarterlyDate) = Dates.lastdayofquarter(Date(dt))
+    
     # io
     function Dates.tryparsenext(d::DatePart{'q'}, str, i, len)
         return Dates.tryparsenext_base10(str, i, len, Dates.min_width(d), Dates.max_width(d))

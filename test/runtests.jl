@@ -18,6 +18,9 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 ## MonthlyDate
 ##
 ##############################################################################
+# constructur
+@test_throws ArgumentError MonthlyDate(1, 0)
+@test_throws ArgumentError MonthlyDate(1, 13)
 
 # since Dates.value(Date(1, 1, 1)) == 1
 @test Dates.value(MonthlyDate(1, 1)) == 1
@@ -43,6 +46,12 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 @test Year(MonthlyDate(1990, 1)) == Year(1990)
 @test Quarter(MonthlyDate(1990, 1)) == Quarter(1)
 @test Month(MonthlyDate(1990, 1)) == Month(1)
+
+# adjusters
+@test firstdayofmonth(MonthlyDate(1990, 3)) == Date(1990, 3, 1)
+@test lastdayofmonth(MonthlyDate(2000, 2)) == Date(2000, 2, 29)
+@test firstdayofquarter(MonthlyDate(2000, 2)) == Date(2000, 1, 1)
+@test lastdayofquarter(MonthlyDate(2000, 2)) == Date(2000, 3, 31)
 
 # arithmetic
 @test MonthlyDate(1990, 1) + Year(3) == MonthlyDate(1993, 1)
@@ -82,6 +91,9 @@ CSV.write(io, df)
 ## QuarterlyDate
 ##
 ##############################################################################
+# constructur
+@test_throws ArgumentError QuarterlyDate(1, 0)
+@test_throws ArgumentError QuarterlyDate(1, 5)
 
 @test Dates.value(QuarterlyDate(1, 1)) == 1
 @test QuarterlyDate(1990, 1) - QuarterlyDate(1989, 1) == Quarter(4)
@@ -110,6 +122,10 @@ CSV.write(io, df)
 
 @test Year(QuarterlyDate(1990, 1)) == Year(1990)
 @test Quarter(QuarterlyDate(1990, 1)) == Quarter(1)
+
+# adjusters
+@test firstdayofquarter(QuarterlyDate(1990, 3)) == Date(1990, 7, 1)
+@test lastdayofquarter(QuarterlyDate(1990, 3)) == Date(1990, 9, 30)
 
 # arithmetic
 @test QuarterlyDate(1990, 1) + Year(1) == QuarterlyDate(1991, 1)
