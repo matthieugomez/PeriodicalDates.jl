@@ -1,7 +1,7 @@
 module MonthlyDates
     using Printf
     using Dates
-    import Dates: UTInstant, value, quarterofyear
+    import Dates: UTInstant, value
     using RecipesBase: RecipesBase, @recipe
     # Quarter defined in Julia 1.6
     if isdefined(Dates, :Quarter)
@@ -60,8 +60,11 @@ module MonthlyDates
 
     #accessor (only bigger periods)    
     Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
-    quarterofyear(dt::MonthlyDate) = quarterofyear(Date(dt))
     Dates.year(dt::MonthlyDate) =  1 + div(value(dt) - 1, 12)
+    function Dates.quarterofyear(dt::MonthlyDate)
+        m = month(dt)
+        m <= 3 ? 1 : m <= 6 ? 2 : m <= 9 ? 3 : 4
+    end
 
     Dates.Month(dt::MonthlyDate) = Month(month(dt))
     Quarter(dt::MonthlyDate) = Quarter(quarterofyear(dt))
@@ -167,7 +170,7 @@ module MonthlyDates
 
     function Dates.yearmonth(dt::QuarterlyDate)
         y, q = divrem(value(dt) - 1, 4)
-        return 1 + y, 1 + q * 3
+        return 1 + y, 1 + 3 * q
     end
     Base.convert(::Type{MonthlyDate}, dt::QuarterlyDate) = MonthlyDate(UTm(((value(dt) - 1) * 3 + 1)))
     Base.convert(::Type{Date}, dt::QuarterlyDate) = Date(yearmonth(dt)...)
@@ -182,9 +185,9 @@ module MonthlyDates
     Dates.zero(::Type{QuarterlyDate}) = Quarter(0)
 
     #accessor (only bigger periods)
-    Dates.month(dt::QuarterlyDate) = 3 * (quarterofyear(dt) - 1) + 1
-    quarterofyear(dt::QuarterlyDate) = quarterofyear(Date(dt))
+    Dates.month(dt::QuarterlyDate) = 1 + 3 * rem(value(dt) - 1, 4)
     Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
+    Dates.quarterofyear(dt::QuarterlyDate) = 1 + rem(value(dt) - 1, 4)
     Quarter(dt::QuarterlyDate) = Quarter(quarterofyear(dt))
     Dates.Year(dt::QuarterlyDate) = Year(year(dt))
 
