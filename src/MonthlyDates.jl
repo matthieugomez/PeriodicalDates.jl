@@ -10,9 +10,6 @@ module MonthlyDates
         include("Quarter.jl")
     end
 
-    if isdefined(Dates, :quarter)
-        import Dates: quarter
-    end
 
     ##############################################################################
     ##
@@ -65,7 +62,6 @@ module MonthlyDates
     #accessor (only bigger periods)    
     Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
     quarterofyear(dt::MonthlyDate) = quarterofyear(Date(dt))
-    quarter(dt::MonthlyDate) = (month(dt) - 1) ÷ 3 + 1
     Dates.year(dt::MonthlyDate) =  1 + div(value(dt) - 1, 12)
 
     Dates.Month(dt::MonthlyDate) = Month(month(dt))
@@ -184,7 +180,6 @@ module MonthlyDates
     #accessor (only bigger periods)
     Dates.month(dt::QuarterlyDate) = 3 * (quarterofyear(dt) - 1) + 1
     quarterofyear(dt::QuarterlyDate) = quarterofyear(Date(dt))
-    quarter(dt::QuarterlyDate) = (month(dt) - 1) ÷ 3 + 1
     Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
     Quarter(dt::QuarterlyDate) = Quarter(quarterofyear(dt))
     Dates.Year(dt::QuarterlyDate) = Year(year(dt))
@@ -206,7 +201,7 @@ module MonthlyDates
     end
 
     function Dates.format(io, d::DatePart{'q'}, dt)
-        print(io, string(quarter(dt)))
+        print(io, string(quarterofyear(dt)))
     end
 
     function parse_quarterly(str::AbstractString)
