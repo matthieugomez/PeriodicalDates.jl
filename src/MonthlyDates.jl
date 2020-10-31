@@ -81,6 +81,12 @@ module MonthlyDates
     months(dt::Year) = 12 * value(dt)
     Dates.guess(a::MonthlyDate, b::MonthlyDate, c) = Int64(div(value(b - a), months(c)))
 
+    # adjusters
+    Dates.firstdayofquarter(dt::MonthlyDate) = Dates.firstdayofquarter(Date(dt))
+    Dates.lastdayofquarter(dt::MonthlyDate) = Dates.lastdayofquarter(Date(dt))
+    Dates.firstdayofmonth(dt::MonthlyDate) = Date(dt)
+    Dates.lastdayofmonth(dt::MonthlyDate) = Dates.lastdayofmonth(Date(dt))
+
     # io
     function Base.parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat)
         MonthlyDate(parse(Date, s, df))
@@ -193,6 +199,10 @@ module MonthlyDates
     quarters(dt::Year) = 4 * value(dt)
     Dates.guess(a::QuarterlyDate, b::QuarterlyDate, c) = Int64(div(value(b - a), quarters(c)))
 
+    # adjusters
+    Dates.firstdayofquarter(dt::QuarterlyDate) = Date(dt)
+    Dates.lastdayofquarter(dt::QuarterlyDate) = Dates.lastdayofquarter(Date(dt))
+    
     # io
     function Base.parse(::Type{QuarterlyDate}, s::AbstractString, df::DateFormat)
         QuarterlyDate(parse(Date, s, df))
