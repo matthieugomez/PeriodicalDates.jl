@@ -96,19 +96,16 @@ module MonthlyDates
     Dates.lastdayofmonth(dt::MonthlyDate) = Dates.lastdayofmonth(Date(dt))
 
     # parse
-    function Base.parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat)
-        MonthlyDate(parse(Date, s, df))
-    end
-    const MonthlyFormat = dateformat"yyyy-mm"
-    Dates.default_format(::Type{MonthlyDate}) = MonthlyFormat
+    const MonthlyDateFormat = DateFormat("yyyy\\mm")
+    Dates.default_format(::Type{MonthlyDate}) = ISODateFormat
 
-    function MonthlyDate(d::AbstractString, format::AbstractString; 
+    function MonthlyDate(str::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
-        parse(MonthlyDate, d, DateFormat(format, locale))
+        parse(MonthlyDate, str, DateFormat(format, locale))
     end
 
-    function MonthlyDate(d::AbstractString, format::DateFormat = ISODateFormat)
-        parse(MonthlyDate, d, format)
+    function MonthlyDate(str::AbstractString, format::DateFormat = ISODateFormat)
+        parse(MonthlyDate, str, format)
     end
 
     # show
@@ -116,7 +113,7 @@ module MonthlyDates
         y,m = yearmonth(dt)
         yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
         mm = lpad(m, 2, "0")
-        print(io, "$(yy)-$mm")
+        print(io, "$(yy)m$mm")
     end
 
     Base.show(io::IO, ::MIME"text/plain", dt::MonthlyDate) = print(io, dt)
@@ -135,7 +132,6 @@ module MonthlyDates
 	   (value, dt -> string(MonthlyDate(UTm(round(dt)))))
 	end
 
-	export MonthlyDate
     ##############################################################################
     ##
     ## QuarterlyDate
@@ -221,51 +217,32 @@ module MonthlyDates
     function Dates.tryparsenext(d::DatePart{'q'}, str, i, len)
         return Dates.tryparsenext_base10(str, i, len, Dates.min_width(d), Dates.max_width(d))
     end
-
     function Dates.format(io, d::DatePart{'q'}, dt)
         print(io, string(quarterofyear(dt)))
     end
 
-    function parse_quarterly(str::AbstractString)
-        if occursin('Q', str) # if the string has 'Q', try the default format "2018-Q1"
-            parse_quarterly(str, QuarterlyFormat) 
-        else # else assume it's formatted as Date
-            parse_quarterly(str, ISODateFormat)
-        end
-    end
+    const QuarterlyDateFormat = DateFormat{Symbol("yyyy-Qm"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 1}, Dates.DatePart{'q'}}}(
+            (
+                Dates.DatePart{'y'}(4,false), Dates.Delim{String,1}("q"), Dates.DatePart{'q'}(1, false)), 
+                Dates.ENGLISH
+            )
+    Dates.default_format(::Type{QuarterlyDate}) = ISODateFormat
 
-    function parse_quarterly(str::AbstractString, df::T) where {T<:DateFormat}
-        if Dates.DatePart{'q'} ∉ Dates._directives(T) # if 
-            return QuarterlyDate(parse(Date, str, df))
-        else
-            return parse(QuarterlyDate, str, df)
-        end
-    end
-
-    # the new key 'q' to Dates.CONVERSION_SPECIFIERS not added during precompilation
-    # therefore construction of QuarterlyFormat with from dateformat string will fail
-    # manually construct QuarterlyFormat
-    const QuarterlyFormat = DateFormat{Symbol("yyyy-Qm"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 2}, Dates.DatePart{'q'}}}(
-        (
-            Dates.DatePart{'y'}(4,false), Dates.Delim{String,2}("-Q"), Dates.DatePart{'q'}(1, false)), 
-            Dates.ENGLISH
-        )
-    Dates.default_format(::Type{QuarterlyDate}) = QuarterlyFormat
-
-    function QuarterlyDate(d::AbstractString, format::AbstractString; 
+    function QuarterlyDate(str::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
-        parse_quarterly(d, DateFormat(format, locale))
+        parse(QuarterlyDate, str, DateFormat(format, locale))
     end
 
-    QuarterlyDate(d::AbstractString, format::DateFormat) = parse_quarterly(d, format)
-    QuarterlyDate(d::AbstractString) = parse_quarterly(d)
+    function QuarterlyDate(str::AbstractString, format::DateFormat = ISODateFormat)
+        parse(QuarterlyDate, str, format)
+    end
 
     # show
     function Base.print(io::IO, dt::QuarterlyDate)
         y,m = yearmonth(dt)
         yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
         q = (m - 1) ÷ 3 + 1
-        print(io, "$(yy)-Q$q")
+        print(io, "$(yy)q$q")
     end
     Base.show(io::IO, ::MIME"text/plain", dt::QuarterlyDate) = print(io, dt)
     if VERSION >= v"1.5-"
@@ -283,10 +260,13 @@ module MonthlyDates
         (value, dt -> string(QuarterlyDate(UTQ(round(dt)))))
     end
 
-    export QuarterlyDate
+    export MonthlyDate, MonthlyDateFormat, QuarterlyDate, QuarterlyDateFormat
 
     # executed at runtime to avoid issues with precompiling dicts
     function __init__()
+        # Base extension needs to happen everytime the module is loaded (issue #24 in TimeZones)
+
+        Dates.CONVERSION_TRANSLATIONS[MonthlyDate] = (Year, Month)
         Dates.CONVERSION_SPECIFIERS['q'] = Quarter
         Dates.CONVERSION_DEFAULTS[Quarter] = Int64(1)
         Dates.CONVERSION_TRANSLATIONS[QuarterlyDate] = (Year, Quarter)

@@ -145,11 +145,11 @@ CSV.write(io, df)
 
 
 # io
-@test replstr([QuarterlyDate(1990, 1)]) == "1-element $(string(Array{QuarterlyDate,1})):\n 1990-Q1"
+@test replstr([QuarterlyDate(1990, 1)]) == "1-element $(string(Array{QuarterlyDate,1})):\n 1990Q1"
 
 # parse
 @test QuarterlyDate("1990-07") == QuarterlyDate(1990, 3)
-@test QuarterlyDate("1990-Q2") == QuarterlyDate(1990, 2)
+@test QuarterlyDate("1990Q2") == QuarterlyDate(1990, 2)
 @test QuarterlyDate("1990/01", "y/m") == QuarterlyDate(1990, 1)
 @test QuarterlyDate("1990m01", dateformat"y\mm") == QuarterlyDate(1990, 1)
 @test QuarterlyDate("1990m07", dateformat"y\mm") == QuarterlyDate(1990, 3)
@@ -163,4 +163,4 @@ CSV.write(io, df)
 io = IOBuffer()
 df = (x = [QuarterlyDate(1990, 1), QuarterlyDate(1990, 2)], )
 CSV.write(io, df) 
-@test String(take!(io)) == "x\n1990-Q1\n1990-Q2\n"
+@test String(take!(io)) == "x\n1990Q1\n1990Q2\n"
