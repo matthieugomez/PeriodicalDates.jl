@@ -80,10 +80,16 @@ module MonthlyDates
     Base.:-(dt::MonthlyDate, p::Year) = dt - Month(p)
   
     # range
-    months(dt::Month) = value(dt)
-    months(dt::Quarter) = 4 * value(dt)
-    months(dt::Year) = 12 * value(dt)
-    Dates.guess(a::MonthlyDate, b::MonthlyDate, c) = Int64(div(value(b - a), months(c)))
+    function Dates.guess(a::MonthlyDate, b::MonthlyDate, c::Month)
+    	Int64(div(value(b - a), value(c)))
+    end
+    function Dates.guess(a::MonthlyDate, b::MonthlyDate, c::Quarter)
+    	Int64(div(value(b - a), 3 * value(c)))
+    end
+    function Dates.guess(a::MonthlyDate, b::MonthlyDate, c::Year)
+    	Int64(div(value(b - a), 12 * value(c)))
+    end
+
 
     # adjusters
     Dates.firstdayofquarter(dt::MonthlyDate) = Dates.firstdayofquarter(Date(dt))
@@ -203,9 +209,13 @@ module MonthlyDates
     Base.:-(dt::QuarterlyDate, p::Year) = dt - Quarter(p)
 
     # range
-    quarters(dt::Quarter) = value(dt)
-    quarters(dt::Year) = 4 * value(dt)
-    Dates.guess(a::QuarterlyDate, b::QuarterlyDate, c) = Int64(div(value(b - a), quarters(c)))
+    function Dates.guess(a::QuarterlyDate, b::QuarterlyDate, c::Quarter)
+    	Int64(div(value(b - a), value(c)))
+    end
+    function Dates.guess(a::QuarterlyDate, b::QuarterlyDate, c::Year)
+    	Int64(div(value(b - a), 4 * value(c)))
+    end
+
 
     # adjusters
     Dates.firstdayofquarter(dt::QuarterlyDate) = Date(dt)

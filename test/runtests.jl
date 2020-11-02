@@ -69,6 +69,10 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 # ranges
 @test length(range(MonthlyDate(1990, 1), MonthlyDate(1991, 1), step = Month(1))) == 13
 @test length(range(MonthlyDate(1990, 1), MonthlyDate(1991, 1), step = Month(3))) == 5
+@test length(range(MonthlyDate(1990, 1), MonthlyDate(1991, 1), step = Quarter(1))) == 5
+@test length(range(MonthlyDate(1990, 1), MonthlyDate(1992, 1), step = Year(1))) == 3
+
+
 
 # print
 @test replstr([MonthlyDate(1990, 1)]) == "1-element $(string(Array{MonthlyDate,1})):\n 1990-01"
@@ -137,6 +141,10 @@ CSV.write(io, df)
 # ranges
 @test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1991, 1), step = Quarter(1))) == 5
 @test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1991, 1), step = Quarter(2))) == 3
+@test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1992, 1), step = Year(1))) == 3
+
+
+# io
 @test replstr([QuarterlyDate(1990, 1)]) == "1-element $(string(Array{QuarterlyDate,1})):\n 1990-Q1"
 
 # parse
