@@ -226,13 +226,6 @@ module MonthlyDates
         print(io, string(quarterofyear(dt)))
     end
 
-    function parse_quarterly(str::AbstractString)
-        if occursin('Q', str) # if the string has 'Q', try the default format "2018-Q1"
-            parse_quarterly(str, QuarterlyFormat) 
-        else # else assume it's formatted as Date
-            parse_quarterly(str, ISODateFormat)
-        end
-    end
 
     function parse_quarterly(str::AbstractString, df::T) where {T<:DateFormat}
         if Dates.DatePart{'q'} ∉ Dates._directives(T) # if 
@@ -243,14 +236,14 @@ module MonthlyDates
     end
 
     # the new key 'q' to Dates.CONVERSION_SPECIFIERS not added during precompilation
-    # therefore construction of QuarterlyFormat with from dateformat string will fail
-    # manually construct QuarterlyFormat
-    const QuarterlyFormat = DateFormat{Symbol("yyyy-Qm"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 2}, Dates.DatePart{'q'}}}(
+    # therefore construction of QuarterlyDateFormat with from dateformat string will fail
+    # manually construct QuarterlyDateFormat
+    const QuarterlyDateFormat = DateFormat{Symbol("yyyy-Qm"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 2}, Dates.DatePart{'q'}}}(
         (
             Dates.DatePart{'y'}(4,false), Dates.Delim{String,2}("-Q"), Dates.DatePart{'q'}(1, false)), 
             Dates.ENGLISH
         )
-    Dates.default_format(::Type{QuarterlyDate}) = QuarterlyFormat
+    Dates.default_format(::Type{QuarterlyDate}) = QuarterlyDateFormat
 
     function QuarterlyDate(d::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
@@ -258,7 +251,7 @@ module MonthlyDates
     end
 
     QuarterlyDate(d::AbstractString, format::DateFormat) = parse_quarterly(d, format)
-    QuarterlyDate(d::AbstractString) = parse_quarterly(d)
+    QuarterlyDate(d::AbstractString) = parse_quarterly(d, ISODateFormat)
 
     # show
     function Base.print(io::IO, dt::QuarterlyDate)
@@ -283,7 +276,7 @@ module MonthlyDates
         (value, dt -> string(QuarterlyDate(UTQ(round(dt)))))
     end
 
-    export QuarterlyDate
+    export QuarterlyDate, QuarterlyDateFormat
 
     # executed at runtime to avoid issues with precompiling dicts
     function __init__()

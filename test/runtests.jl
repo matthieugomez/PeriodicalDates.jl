@@ -149,7 +149,7 @@ CSV.write(io, df)
 
 # parse
 @test QuarterlyDate("1990-07") == QuarterlyDate(1990, 3)
-@test QuarterlyDate("1990-Q2") == QuarterlyDate(1990, 2)
+@test QuarterlyDate("1990-Q2", QuarterlyDateFormat) == QuarterlyDate(1990, 2)
 @test QuarterlyDate("1990/01", "y/m") == QuarterlyDate(1990, 1)
 @test QuarterlyDate("1990m01", dateformat"y\mm") == QuarterlyDate(1990, 1)
 @test QuarterlyDate("1990m07", dateformat"y\mm") == QuarterlyDate(1990, 3)
