@@ -1,7 +1,7 @@
 module MonthlyDates
     using Printf
     using Dates
-    import Dates: UTInstant, value
+    import Dates: UTInstant, value, DatePart
     using RecipesBase: RecipesBase, @recipe
     # Quarter defined in Julia 1.6
     if isdefined(Dates, :Quarter)
@@ -9,6 +9,7 @@ module MonthlyDates
     else
         include("Quarter.jl")
     end
+
 
     ##############################################################################
     ##
@@ -94,7 +95,8 @@ module MonthlyDates
     function Base.parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat)
         MonthlyDate(parse(Date, s, df))
     end
-    Dates.default_format(::Type{MonthlyDate}) = dateformat"yyyy-mm"
+    const MonthlyFormat = dateformat"yyyy-mm"
+    Dates.default_format(::Type{MonthlyDate}) = MonthlyFormat
 
     function MonthlyDate(d::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
@@ -210,19 +212,47 @@ module MonthlyDates
     Dates.lastdayofquarter(dt::QuarterlyDate) = Dates.lastdayofquarter(Date(dt))
     
     # io
-    function Base.parse(::Type{QuarterlyDate}, s::AbstractString, df::DateFormat)
-        QuarterlyDate(parse(Date, s, df))
+    function Dates.tryparsenext(d::DatePart{'q'}, str, i, len)
+        return Dates.tryparsenext_base10(str, i, len, Dates.min_width(d), Dates.max_width(d))
     end
-    Dates.default_format(::Type{QuarterlyDate}) = dateformat"yyyy-mm"
+
+    function Dates.format(io, d::DatePart{'q'}, dt)
+        print(io, string(quarterofyear(dt)))
+    end
+
+    function parse_quarterly(str::AbstractString)
+        if occursin('Q', str) # if the string has 'Q', try the default format "2018-Q1"
+            parse_quarterly(str, QuarterlyFormat) 
+        else # else assume it's formatted as Date
+            parse_quarterly(str, ISODateFormat)
+        end
+    end
+
+    function parse_quarterly(str::AbstractString, df::T) where {T<:DateFormat}
+        if Dates.DatePart{'q'} ∉ Dates._directives(T) # if 
+            return QuarterlyDate(parse(Date, str, df))
+        else
+            return parse(QuarterlyDate, str, df)
+        end
+    end
+
+    # the new key 'q' to Dates.CONVERSION_SPECIFIERS not added during precompilation
+    # therefore construction of QuarterlyFormat with from dateformat string will fail
+    # manually construct QuarterlyFormat
+    const QuarterlyFormat = DateFormat{Symbol("yyyy-Qm"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 2}, Dates.DatePart{'q'}}}(
+        (
+            Dates.DatePart{'y'}(4,false), Dates.Delim{String,2}("-Q"), Dates.DatePart{'q'}(1, false)), 
+            Dates.ENGLISH
+        )
+    Dates.default_format(::Type{QuarterlyDate}) = QuarterlyFormat
 
     function QuarterlyDate(d::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
-        parse(QuarterlyDate, d,  DateFormat(format, locale))
+        parse_quarterly(d, DateFormat(format, locale))
     end
 
-    function QuarterlyDate(d::AbstractString, format::DateFormat = ISODateFormat)
-        parse(QuarterlyDate, d, format)
-    end
+    QuarterlyDate(d::AbstractString, format::DateFormat) = parse_quarterly(d, format)
+    QuarterlyDate(d::AbstractString) = parse_quarterly(d)
 
     function Base.print(io::IO, dt::QuarterlyDate)
         y,m = yearmonth(dt)
@@ -249,5 +279,12 @@ module MonthlyDates
     end
 
     export MonthlyDate, QuarterlyDate
+
+    # executed at runtime to avoid issues with precompiling dicts
+    function __init__()
+        Dates.CONVERSION_SPECIFIERS['q'] = Quarter
+        Dates.CONVERSION_DEFAULTS[Quarter] = Int64(1)
+        Dates.CONVERSION_TRANSLATIONS[QuarterlyDate] = (Year, Quarter)
+    end
 
 end
