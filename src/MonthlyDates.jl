@@ -10,7 +10,6 @@ module MonthlyDates
         include("Quarter.jl")
     end
 
-
     ##############################################################################
     ##
     ## MonthlyDate
@@ -62,7 +61,7 @@ module MonthlyDates
     Dates.eps(::Type{MonthlyDate}) = Month(1)
     Dates.zero(::Type{MonthlyDate}) = Month(0)
 
-    #accessor (only bigger periods)    
+    #accessors (only bigger periods)    
     Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
     Dates.year(dt::MonthlyDate) =  1 + div(value(dt) - 1, 12)
     Dates.quarterofyear(dt::MonthlyDate) = 1 + div(month(dt) - 1, 3)
@@ -90,14 +89,13 @@ module MonthlyDates
     	Int64(div(value(b - a), 12 * value(c)))
     end
 
-
     # adjusters
     Dates.firstdayofquarter(dt::MonthlyDate) = Dates.firstdayofquarter(Date(dt))
     Dates.lastdayofquarter(dt::MonthlyDate) = Dates.lastdayofquarter(Date(dt))
     Dates.firstdayofmonth(dt::MonthlyDate) = Date(dt)
     Dates.lastdayofmonth(dt::MonthlyDate) = Dates.lastdayofmonth(Date(dt))
 
-    # io
+    # parse
     function Base.parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat)
         MonthlyDate(parse(Date, s, df))
     end
@@ -113,6 +111,7 @@ module MonthlyDates
         parse(MonthlyDate, d, format)
     end
 
+    # show
     function Base.print(io::IO, dt::MonthlyDate)
         y,m = yearmonth(dt)
         yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
@@ -121,9 +120,6 @@ module MonthlyDates
     end
 
     Base.show(io::IO, ::MIME"text/plain", dt::MonthlyDate) = print(io, dt)
-
-
-
     if VERSION >= v"1.5-"
         Base.show(io::IO, dt::MonthlyDate) = print(io, MonthlyDate, "(\"", dt, "\")")
     else
@@ -139,6 +135,7 @@ module MonthlyDates
 	   (value, dt -> string(MonthlyDate(UTm(round(dt)))))
 	end
 
+	export MonthlyDate
     ##############################################################################
     ##
     ## QuarterlyDate
@@ -195,7 +192,7 @@ module MonthlyDates
     Dates.eps(::Type{QuarterlyDate}) = Quarter(1)
     Dates.zero(::Type{QuarterlyDate}) = Quarter(0)
 
-    #accessor (only bigger periods)
+    #accessors (only bigger periods)
     Dates.month(dt::QuarterlyDate) = 1 + 3 * rem(value(dt) - 1, 4)
     Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
     Dates.quarterofyear(dt::QuarterlyDate) = 1 + rem(value(dt) - 1, 4)
@@ -216,12 +213,11 @@ module MonthlyDates
     	Int64(div(value(b - a), 4 * value(c)))
     end
 
-
     # adjusters
     Dates.firstdayofquarter(dt::QuarterlyDate) = Date(dt)
     Dates.lastdayofquarter(dt::QuarterlyDate) = Dates.lastdayofquarter(Date(dt))
     
-    # io
+    # parse
     function Dates.tryparsenext(d::DatePart{'q'}, str, i, len)
         return Dates.tryparsenext_base10(str, i, len, Dates.min_width(d), Dates.max_width(d))
     end
@@ -264,15 +260,14 @@ module MonthlyDates
     QuarterlyDate(d::AbstractString, format::DateFormat) = parse_quarterly(d, format)
     QuarterlyDate(d::AbstractString) = parse_quarterly(d)
 
+    # show
     function Base.print(io::IO, dt::QuarterlyDate)
         y,m = yearmonth(dt)
         yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
         q = (m - 1) ÷ 3 + 1
         print(io, "$(yy)-Q$q")
     end
-   
     Base.show(io::IO, ::MIME"text/plain", dt::QuarterlyDate) = print(io, dt)
-   
     if VERSION >= v"1.5-"
         Base.show(io::IO, dt::QuarterlyDate) = print(io, QuarterlyDate, "(\"", dt, "\")")
     else
@@ -288,7 +283,7 @@ module MonthlyDates
         (value, dt -> string(QuarterlyDate(UTQ(round(dt)))))
     end
 
-    export MonthlyDate, QuarterlyDate
+    export QuarterlyDate
 
     # executed at runtime to avoid issues with precompiling dicts
     function __init__()
