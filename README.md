@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.com/matthieugomez/MonthlyDates.jl.svg?branch=master)](https://travis-ci.com/matthieugomez/MonthlyDates.jl)
+[![Coverage Status](https://coveralls.io/repos/matthieugomez/MonthlyDates.jl/badge.svg?branch=master)](https://coveralls.io/r/matthieugomez/MonthlyDates.jl?branch=master)
 
 # MonthlyDates.jl
 
