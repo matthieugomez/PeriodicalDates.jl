@@ -26,6 +26,11 @@ module MonthlyDates
         MonthlyDate(v::UTInstant{Month}) = new(v)
     end
     UTm(x) = UTInstant(Month(x))
+    function Dates.validargs(::Type{MonthlyDate}, y::Int, m::Int)
+        1 <= m <= 12 || throw(ArgumentError("Month: $m out of range (1:12)"))
+        nothing
+    end
+
 
     """
     `MonthlyDate(y, [m]) -> MonthlyDate`
@@ -33,7 +38,7 @@ module MonthlyDates
     Construct a `MonthlyDate` type by parts.
     """
     function MonthlyDate(y::Int, m::Int = 1)
-        1 <= m <= 12 || throw(ArgumentError("Month: $m out of range (1:12)"))
+        Dates.validargs(MonthlyDate, y, m)
         MonthlyDate(UTm(12 * (y - 1) + m))
     end
     MonthlyDate(y::Year, m::Month = Month(1)) = MonthlyDate(value(y), value(m))
@@ -96,18 +101,25 @@ module MonthlyDates
     Dates.lastdayofmonth(dt::MonthlyDate) = Dates.lastdayofmonth(Date(dt))
 
     # parse
-    function Base.parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat)
+    const MonthlyDateFormat = dateformat"yyyy-mm"
+    Dates.default_format(::Type{MonthlyDate}) = MonthlyDateFormat
+
+    function Base.parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat = MonthlyDateFormat)
         MonthlyDate(parse(Date, s, df))
     end
-    const MonthlyFormat = dateformat"yyyy-mm"
-    Dates.default_format(::Type{MonthlyDate}) = MonthlyFormat
+
+    function Base.tryparse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat = MonthlyDateFormat)
+        out = tryparse(Date, s, df)
+        out === nothing ? nothing : MonthlyDate(out)
+    end
+
 
     function MonthlyDate(d::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
         parse(MonthlyDate, d, DateFormat(format, locale))
     end
 
-    function MonthlyDate(d::AbstractString, format::DateFormat = ISODateFormat)
+    function MonthlyDate(d::AbstractString, format::DateFormat = MonthlyDateFormat)
         parse(MonthlyDate, d, format)
     end
 
@@ -152,14 +164,17 @@ module MonthlyDates
         QuarterlyDate(v::UTInstant{Quarter}) = new(v)
     end
     UTQ(x) = UTInstant(Quarter(x))
-
+    function Dates.validargs(::Type{QuarterlyDate}, y::Int, q::Int)
+        1 <= q <= 4 || throw(ArgumentError("Quarter: $q out of range (1:4)"))
+        nothing
+    end
     """
     `QuarterlyDate(y, [q]) -> QuarterlyDate`
     
     Construct a `QuaterlyDate` type by parts.
     """
     function QuarterlyDate(y::Int, q::Int = 1)
-        1 <= q <= 4 || throw(ArgumentError("Quarter: $q out of range (1:4)"))
+        Dates.validargs(QuarterlyDate, y, q)
         QuarterlyDate(UTQ(4 * (y - 1) + q))
     end
     QuarterlyDate(y::Year, q::Quarter = Quarter(1)) = QuarterlyDate(value(y), value(q))
@@ -218,7 +233,7 @@ module MonthlyDates
     Dates.lastdayofquarter(dt::QuarterlyDate) = Dates.lastdayofquarter(Date(dt))
     
     # parse
-    function Dates.tryparsenext(d::DatePart{'q'}, str, i, len)
+    @inline function Dates.tryparsenext(d::DatePart{'q'}, str, i, len)
         return Dates.tryparsenext_base10(str, i, len, Dates.min_width(d), Dates.max_width(d))
     end
 
@@ -226,39 +241,39 @@ module MonthlyDates
         print(io, string(quarterofyear(dt)))
     end
 
-    function parse_quarterly(str::AbstractString)
-        if occursin('Q', str) # if the string has 'Q', try the default format "2018-Q1"
-            parse_quarterly(str, QuarterlyFormat) 
-        else # else assume it's formatted as Date
-            parse_quarterly(str, ISODateFormat)
-        end
-    end
+    const QuarterlyDateFormat = DateFormat{Symbol("yyyy-Qm"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 2}, Dates.DatePart{'q'}}}(
+            (
+                Dates.DatePart{'y'}(4,false), Dates.Delim{String,2}("-Q"), Dates.DatePart{'q'}(1, false)), 
+                Dates.ENGLISH
+            )
+    Dates.default_format(::Type{QuarterlyDate}) = QuarterlyDateFormat
 
-    function parse_quarterly(str::AbstractString, df::T) where {T<:DateFormat}
-        if Dates.DatePart{'q'} ∉ Dates._directives(T) # if 
-            return QuarterlyDate(parse(Date, str, df))
+
+    function Base.parse(::Type{QuarterlyDate}, str::AbstractString, df::DateFormat=QuarterlyDateFormat)
+        if Dates.DatePart{'q'} ∈ Dates._directives(typeof(df))
+            invoke(parse, Tuple{Type{<:TimeType}, AbstractString, DateFormat}, QuarterlyDate, str, df)
         else
-            return parse(QuarterlyDate, str, df)
+            QuarterlyDate(parse(Date, str, df))
         end
     end
 
-    # the new key 'q' to Dates.CONVERSION_SPECIFIERS not added during precompilation
-    # therefore construction of QuarterlyFormat with from dateformat string will fail
-    # manually construct QuarterlyFormat
-    const QuarterlyFormat = DateFormat{Symbol("yyyy-Qm"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 2}, Dates.DatePart{'q'}}}(
-        (
-            Dates.DatePart{'y'}(4,false), Dates.Delim{String,2}("-Q"), Dates.DatePart{'q'}(1, false)), 
-            Dates.ENGLISH
-        )
-    Dates.default_format(::Type{QuarterlyDate}) = QuarterlyFormat
+    function Base.tryparse(::Type{QuarterlyDate}, str::AbstractString, df::DateFormat= QuarterlyDateFormat)
+        if Dates.DatePart{'q'} ∈ Dates._directives(typeof(df))
+            invoke(tryparse, Tuple{Type{<:TimeType}, AbstractString, DateFormat}, QuarterlyDate, str, df)
+        else
+            out = tryparse(Date, str, df)
+            out === nothing ? nothing : QuarterlyDate(out)
+        end
+    end
 
     function QuarterlyDate(d::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
-        parse_quarterly(d, DateFormat(format, locale))
+        parse(QuarterlyDate, d, DateFormat(format, locale))
     end
 
-    QuarterlyDate(d::AbstractString, format::DateFormat) = parse_quarterly(d, format)
-    QuarterlyDate(d::AbstractString) = parse_quarterly(d)
+    function QuarterlyDate(d::AbstractString, format::DateFormat = QuarterlyDateFormat)
+        parse(QuarterlyDate, d, format)
+    end
 
     # show
     function Base.print(io::IO, dt::QuarterlyDate)
