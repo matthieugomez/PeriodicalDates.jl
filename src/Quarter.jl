@@ -21,7 +21,7 @@ let vmax = typemax(Int64) ÷ 4, vmin = typemin(Int64) ÷ 4
         Quarter(value(x) * 4)
     end
 end
-Base.convert(::Type{Year}, x::Quarter) = Year(divexact(value(x), 4))
+Base.convert(::Type{Year}, x::Quarter) = Year(Dates.divexact(value(x), 4))
 Base.promote_rule(::Type{Year}, ::Type{Quarter}) = Quarter
 
 let vmax = typemax(Int64) ÷ 3, vmin = typemin(Int64) ÷ 3

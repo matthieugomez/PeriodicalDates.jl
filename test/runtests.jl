@@ -7,11 +7,22 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 ## Quarter
 ##
 ##############################################################################
-
+@test Date(1990, 1) + Quarter(2) == Date(1990, 7)
+@test Date(1990, 1) - Quarter(2) == Date(1989, 7)
+@test DateTime(1990, 1) + Quarter(2) == DateTime(1990, 7)
+@test DateTime(1990, 1) - Quarter(2) == DateTime(1989, 7)
+@test Year(Quarter(4)) == Year(1)
+@test Quarter(4) <= Quarter(5)
+@test Quarter(4) <= Year(1)
+@test Quarter(1) - Quarter(2) == Quarter(-1)
 @test Quarter(Date(1990, 1)) == Quarter(1)
+@test Quarter(DateTime(1990, 1)) == Quarter(1)
+
 @test quarterofyear(Date(1990, 1)) == 1
 @test Month(Quarter(3)) == Month(9)
 @test_throws InexactError Quarter(Month(4))
+@test replstr(Quarter(1)) == "1 quarter"
+@test replstr(Quarter(2)) == "2 quarters"
 
 ##############################################################################
 ##
@@ -27,8 +38,19 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 @test Dates.value(MonthlyDate(1.0, 1.0)) == 1
 
 @test MonthlyDate(1990, 1) >= MonthlyDate(1989, 1)
+@test MonthlyDate(Year(1990), Month(1)) >= MonthlyDate(1989, 1)
+
 @test Date(MonthlyDate(Date(1990, 1))) == Date(1990, 1)
+@test Date(MonthlyDate(DateTime(1990, 1))) == Date(1990, 1)
+
 @test Date(MonthlyDate(1990, 1)) == Date(1990, 1)
+@test DateTime(MonthlyDate(1990, 1)) == DateTime(1990, 1)
+
+@test promote_rule(MonthlyDate, Date) == Date
+@test promote_rule(MonthlyDate, DateTime) == DateTime
+@test eps(MonthlyDate) == Month(1)
+@test zero(MonthlyDate) == Month(0)
+
 # similar definition for convert(Day, Date(1990, 1, 1))
 @test convert(Month, MonthlyDate(1990, 1)) == Month(23869)
 @test convert(MonthlyDate, Month(23869)) == MonthlyDate(1990, 1)
@@ -110,8 +132,14 @@ CSV.write(io, df)
 @test Dates.value(QuarterlyDate(1, 1)) == 1
 @test QuarterlyDate(1990, 1) - QuarterlyDate(1989, 1) == Quarter(4)
 @test QuarterlyDate(1990, 1) >= QuarterlyDate(1989, 1)
+
+@test QuarterlyDate(Year(1990), Quarter(1)) == QuarterlyDate(1990, 1)
+@test QuarterlyDate(1990.0, 1.0) == QuarterlyDate(1990, 1)
+
 @test Date(QuarterlyDate(1990, 1)) == Date(1990, 1)
+@test DateTime(QuarterlyDate(1990, 1)) == DateTime(1990, 1)
 @test QuarterlyDate(Date(1990, 1)) == QuarterlyDate(1990, 1)
+@test QuarterlyDate(DateTime(1990, 1)) == QuarterlyDate(1990, 1)
 @test QuarterlyDate(Date(1990, 2)) == QuarterlyDate(1990, 1)
 @test DateTime(QuarterlyDate(1990, 1)) == DateTime(1990, 1)
 @test QuarterlyDate(DateTime(1990, 1)) == QuarterlyDate(1990, 1)
@@ -127,9 +155,14 @@ CSV.write(io, df)
 @test QuarterlyDate(1990, 1) != Date(1990, 1, 2)
 @test QuarterlyDate(1990, 1) == MonthlyDate(1990, 1)
 @test QuarterlyDate(1990, 1) != MonthlyDate(1990, 2)
-
+@test promote_rule(QuarterlyDate, MonthlyDate) == MonthlyDate
+@test promote_rule(QuarterlyDate, Date) == Date
+@test promote_rule(QuarterlyDate, DateTime) == DateTime
+@test eps(QuarterlyDate) == Quarter(1)
+@test zero(QuarterlyDate) == Quarter(0)
 # accessor
 @test year(QuarterlyDate(1990, 4)) == 1990
+@test month(QuarterlyDate(1990, 4)) == 10
 @test quarterofyear(QuarterlyDate(1990, 4)) == 4
 
 @test Year(QuarterlyDate(1990, 1)) == Year(1990)
