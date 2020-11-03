@@ -84,6 +84,14 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 @test MonthlyDate("1990/01", "y/m") == MonthlyDate(1990, 1)
 @test MonthlyDate("1990m01", dateformat"y\mm") == MonthlyDate(1990, 1)
 
+@test parse(MonthlyDate, "1990m01") == MonthlyDate(1990, 1)
+@test parse(MonthlyDate, "1990/01", dateformat"y/m") == MonthlyDate(1990, 1)
+@test parse(MonthlyDate, "1990m01", dateformat"y\mm") == MonthlyDate(1990, 1)
+
+@test tryparse(MonthlyDate, "1990m13") == nothing
+@test tryparse(MonthlyDate, "1990/01", dateformat"y/m") == MonthlyDate(1990, 1)
+@test tryparse(MonthlyDate, "1990m01", dateformat"y\mm") == MonthlyDate(1990, 1)
+
 
 # csv
 io = IOBuffer()

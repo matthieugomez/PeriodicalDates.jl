@@ -26,6 +26,11 @@ module MonthlyDates
         MonthlyDate(v::UTInstant{Month}) = new(v)
     end
     UTm(x) = UTInstant(Month(x))
+    function Dates.validargs(::Type{MonthlyDate}, y::Int, m::Int)
+        1 <= m <= 12 || throw(ArgumentError("Month: $m out of range (1:12)"))
+        nothing
+    end
+
 
     """
     `MonthlyDate(y, [m]) -> MonthlyDate`
@@ -33,7 +38,7 @@ module MonthlyDates
     Construct a `MonthlyDate` type by parts.
     """
     function MonthlyDate(y::Int, m::Int = 1)
-        1 <= m <= 12 || throw(ArgumentError("Month: $m out of range (1:12)"))
+        Dates.validargs(MonthlyDate, y, m)
         MonthlyDate(UTm(12 * (y - 1) + m))
     end
     MonthlyDate(y::Year, m::Month = Month(1)) = MonthlyDate(value(y), value(m))
@@ -105,7 +110,7 @@ module MonthlyDates
 
     function Base.tryparse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat = MonthlyDateFormat)
         out = tryparse(Date, s, df)
-        out === nothing ? nothing : QuarterlyDate(out)
+        out === nothing ? nothing : MonthlyDate(out)
     end
 
 
@@ -159,14 +164,17 @@ module MonthlyDates
         QuarterlyDate(v::UTInstant{Quarter}) = new(v)
     end
     UTQ(x) = UTInstant(Quarter(x))
-
+    function Dates.validargs(::Type{QuarterlyDate}, y::Int, q::Int)
+        1 <= q <= 4 || throw(ArgumentError("Quarter: $q out of range (1:4)"))
+        nothing
+    end
     """
     `QuarterlyDate(y, [q]) -> QuarterlyDate`
     
     Construct a `QuaterlyDate` type by parts.
     """
     function QuarterlyDate(y::Int, q::Int = 1)
-        1 <= q <= 4 || throw(ArgumentError("Quarter: $q out of range (1:4)"))
+        Dates.validargs(QuarterlyDate, y, q)
         QuarterlyDate(UTQ(4 * (y - 1) + q))
     end
     QuarterlyDate(y::Year, q::Quarter = Quarter(1)) = QuarterlyDate(value(y), value(q))
