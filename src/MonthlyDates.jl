@@ -241,7 +241,7 @@ module MonthlyDates
         print(io, string(quarterofyear(dt)))
     end
 
-    const QuarterlyDateFormat = DateFormat{Symbol("yyyy-Qm"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 2}, Dates.DatePart{'q'}}}(
+    const QuarterlyDateFormat = DateFormat{Symbol("yyyy-Qq"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 2}, Dates.DatePart{'q'}}}(
             (
                 Dates.DatePart{'y'}(4,false), Dates.Delim{String,2}("-Q"), Dates.DatePart{'q'}(1, false)), 
                 Dates.ENGLISH
