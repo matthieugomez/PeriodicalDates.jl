@@ -101,7 +101,7 @@ module MonthlyDates
     Dates.lastdayofmonth(dt::MonthlyDate) = Dates.lastdayofmonth(Date(dt))
 
     # parse
-    const MonthlyDateFormat = dateformat"yyyy\mmm"
+    const MonthlyDateFormat = dateformat"yyyy-mm"
     Dates.default_format(::Type{MonthlyDate}) = MonthlyDateFormat
 
     function Base.parse(::Type{MonthlyDate}, s::AbstractString, df::DateFormat = MonthlyDateFormat)
@@ -128,7 +128,7 @@ module MonthlyDates
         y,m = yearmonth(dt)
         yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
         mm = lpad(m, 2, "0")
-        print(io, "$(yy)m$mm")
+        print(io, "$(yy)-$mm")
     end
 
     Base.show(io::IO, ::MIME"text/plain", dt::MonthlyDate) = print(io, dt)
@@ -241,9 +241,9 @@ module MonthlyDates
         print(io, string(quarterofyear(dt)))
     end
 
-    const QuarterlyDateFormat = DateFormat{Symbol("yyyy-Qm"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 1}, Dates.DatePart{'q'}}}(
+    const QuarterlyDateFormat = DateFormat{Symbol("yyyy-Qm"), Tuple{Dates.DatePart{'y'}, Dates.Delim{String, 2}, Dates.DatePart{'q'}}}(
             (
-                Dates.DatePart{'y'}(4,false), Dates.Delim{String,1}("q"), Dates.DatePart{'q'}(1, false)), 
+                Dates.DatePart{'y'}(4,false), Dates.Delim{String,2}("-Q"), Dates.DatePart{'q'}(1, false)), 
                 Dates.ENGLISH
             )
     Dates.default_format(::Type{QuarterlyDate}) = QuarterlyDateFormat
@@ -280,7 +280,7 @@ module MonthlyDates
         y,m = yearmonth(dt)
         yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
         q = (m - 1) ÷ 3 + 1
-        print(io, "$(yy)q$q")
+        print(io, "$(yy)-Q$q")
     end
     Base.show(io::IO, ::MIME"text/plain", dt::QuarterlyDate) = print(io, dt)
     if VERSION >= v"1.5-"

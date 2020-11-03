@@ -75,20 +75,20 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 
 
 # print
-@test replstr([MonthlyDate(1990, 1)]) == "1-element $(string(Array{MonthlyDate,1})):\n 1990m01"
+@test replstr([MonthlyDate(1990, 1)]) == "1-element $(string(Array{MonthlyDate,1})):\n 1990-01"
 @test Dates.format(MonthlyDate(1990, 3), dateformat"Y-mm") == "1990-03"
 
 
 # parse
-@test MonthlyDate("1990m01") == MonthlyDate(1990, 1)
+@test MonthlyDate("1990-01") == MonthlyDate(1990, 1)
 @test MonthlyDate("1990/01", "y/m") == MonthlyDate(1990, 1)
 @test MonthlyDate("1990m01", dateformat"y\mm") == MonthlyDate(1990, 1)
 
-@test parse(MonthlyDate, "1990m01") == MonthlyDate(1990, 1)
+@test parse(MonthlyDate, "1990-01") == MonthlyDate(1990, 1)
 @test parse(MonthlyDate, "1990/01", dateformat"y/m") == MonthlyDate(1990, 1)
 @test parse(MonthlyDate, "1990m01", dateformat"y\mm") == MonthlyDate(1990, 1)
 
-@test tryparse(MonthlyDate, "1990m13") == nothing
+@test tryparse(MonthlyDate, "1990-13") == nothing
 @test tryparse(MonthlyDate, "1990/01", dateformat"y/m") == MonthlyDate(1990, 1)
 @test tryparse(MonthlyDate, "1990m01", dateformat"y\mm") == MonthlyDate(1990, 1)
 
@@ -97,7 +97,7 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 io = IOBuffer()
 df = (x = [MonthlyDate(1990, 1), MonthlyDate(1990, 2)], )
 CSV.write(io, df) 
-@test String(take!(io)) == "x\n1990m01\n1990m02\n"
+@test String(take!(io)) == "x\n1990-01\n1990-02\n"
 ##############################################################################
 ##
 ## QuarterlyDate
@@ -153,7 +153,7 @@ CSV.write(io, df)
 
 
 # io
-@test replstr([QuarterlyDate(1990, 1)]) == "1-element $(string(Array{QuarterlyDate,1})):\n 1990q1"
+@test replstr([QuarterlyDate(1990, 1)]) == "1-element $(string(Array{QuarterlyDate,1})):\n 1990-Q1"
 
 # parse
 @test parse(QuarterlyDate, "1990-07", dateformat"yyyy-mm") == QuarterlyDate(1990, 3)
@@ -162,6 +162,8 @@ CSV.write(io, df)
 @test tryparse(QuarterlyDate,"1990-Q2", dateformat"yyyy-Qq") == QuarterlyDate(1990, 2)
 @test tryparse(QuarterlyDate,"1990-2", dateformat"yyyy-Qq") == nothing
 @test tryparse(QuarterlyDate,"1990-Q2", dateformat"yyyy-mm") == nothing
+@test QuarterlyDate("1990-Q2") == QuarterlyDate(1990, 2)
+
 @test QuarterlyDate("1990-Q2", "yyyy-Qq") == QuarterlyDate(1990, 2)
 @test QuarterlyDate("1990/01", "y/m") == QuarterlyDate(1990, 1)
 @test QuarterlyDate("1990m01", dateformat"y\mm") == QuarterlyDate(1990, 1)
@@ -176,4 +178,4 @@ CSV.write(io, df)
 io = IOBuffer()
 df = (x = [QuarterlyDate(1990, 1), QuarterlyDate(1990, 2)], )
 CSV.write(io, df) 
-@test String(take!(io)) == "x\n1990q1\n1990q2\n"
+@test String(take!(io)) == "x\n1990-Q1\n1990-Q2\n"
