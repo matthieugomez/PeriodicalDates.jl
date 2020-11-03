@@ -8,15 +8,15 @@ This packages makes it easier to work with monthly or quarterly dates. It define
 - A `MonthlyDate <: TimeType` type
 	```julia
 	julia> using Dates, MonthlyDates
-	julia> dt = Date(1990, 1)
-	# 1990-01-01
-	julia> dtm = MonthlyDate(dt)
+	julia> dt = MonthlyDate(1990, 1)
 	# 1990m01
-	# Alternatively, use the MonthlyDate constructor:
-	julia> dtm = MonthlyDate(1990, 1)
+	# Alternatively, construct from a date
+	julia> dtm = MonthlyDate(Date(1990, 1))
 	# 1990m01
-	# Alternatively, contruct from a string using default dateformat "yyyy\mmm"
-	julia> dtm = MonthlyDate("1990-1", dateformat"Y-m")
+	# Alternatively, contruct from a string (default dateformat"yyyy\mmm")
+	julia> dtm = MonthlyDate("1990m01", dateformat"yyyy\mmm")
+	# 1990m01
+	julia> dtm = MonthlyDate("1990-01", dateformat"yyyy-mm")
 	# 1990m01
 	julia> dtm + Month(1)
 	# 1990m02
@@ -28,20 +28,20 @@ This packages makes it easier to work with monthly or quarterly dates. It define
 
 	```julia
 	julia> using Dates, MonthlyDates
-	julia> dt = Date(1990, 1)
-	# 1990-01-01
-	julia> dtq = QuarterlyDate(dt)
-	# 1990q1
-	# Alternatively, use the QuarterlyDate constructor:
 	julia> dtq = QuarterlyDate(1990, 1)
 	# 1990q1
-	# Alternatively, contruct from a string using default dateformat "yyyy\qq"
+	# Alternatively, construct from a date
+	julia> dtq = QuarterlyDate(Date(1990, 1))
+	# 1990q1
+	# Alternatively, contruct from a string (default dateformat"yyyy\qq")
 	julia> dtq = QuarterlyDate("1990q1", dateformat"yyyy\qq") 
 	# 1990q1
+	julia> dtq = QuarterlyDate("1990-04", dateformat"yyyy-mm")
+	# 1990q2
 	julia> dtq + Quarter(3)
-	# 1991q4
+	# 1991q1
 	julia> Date(dtq)
-	# 1990-01-01
+	# 1990-04-01
 	```
 
 Please open an issue or submit a pull request if you need more methods to be defined.
