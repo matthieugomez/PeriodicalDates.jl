@@ -65,7 +65,7 @@ module MonthlyDates
 
     Dates.eps(::Type{MonthlyDate}) = Month(1)
     Dates.zero(::Type{MonthlyDate}) = Month(0)
-
+   
     #accessors (only bigger periods)    
     Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
     Dates.year(dt::MonthlyDate) =  1 + div(value(dt) - 1, 12)
@@ -74,6 +74,16 @@ module MonthlyDates
     Dates.Month(dt::MonthlyDate) = Month(month(dt))
     Quarter(dt::MonthlyDate) = Quarter(quarterofyear(dt))
     Dates.Year(dt::MonthlyDate) = Year(year(dt))
+
+    Dates.trunc(dt::MonthlyDate, ::Type{Year}) = MonthlyDate(year(dt), 1)
+    Dates.trunc(dt::MonthlyDate, ::Type{Quarter}) = MonthlyDate(year(dt), 1 + 3 * (quarterofyear(dt) - 1))
+    Dates.trunc(dt::MonthlyDate, ::Type{Month}) = dt
+
+    # adjusters
+    Dates.firstdayofquarter(dt::MonthlyDate) = Dates.firstdayofquarter(Date(dt))
+    Dates.lastdayofquarter(dt::MonthlyDate) = Dates.lastdayofquarter(Date(dt))
+    Dates.firstdayofmonth(dt::MonthlyDate) = Date(dt)
+    Dates.lastdayofmonth(dt::MonthlyDate) = Dates.lastdayofmonth(Date(dt))
 
     # arithmetics
     Base.:+(dt::MonthlyDate, m::Month) = MonthlyDate(UTm(value(dt) + value(m)))
@@ -94,11 +104,6 @@ module MonthlyDates
     	Int64(div(value(b - a), 12 * value(c)))
     end
 
-    # adjusters
-    Dates.firstdayofquarter(dt::MonthlyDate) = Dates.firstdayofquarter(Date(dt))
-    Dates.lastdayofquarter(dt::MonthlyDate) = Dates.lastdayofquarter(Date(dt))
-    Dates.firstdayofmonth(dt::MonthlyDate) = Date(dt)
-    Dates.lastdayofmonth(dt::MonthlyDate) = Dates.lastdayofmonth(Date(dt))
 
     # parse
     const MonthlyDateFormat = dateformat"yyyy-mm"
@@ -213,7 +218,13 @@ module MonthlyDates
     Dates.quarterofyear(dt::QuarterlyDate) = 1 + rem(value(dt) - 1, 4)
     Quarter(dt::QuarterlyDate) = Quarter(quarterofyear(dt))
     Dates.Year(dt::QuarterlyDate) = Year(year(dt))
+    Dates.trunc(dt::QuarterlyDate, ::Type{Year}) = QuarterlyDate(year(dt), 1)
+    Dates.trunc(dt::QuarterlyDate, ::Type{Quarter}) = dt
 
+    # adjusters
+    Dates.firstdayofquarter(dt::QuarterlyDate) = Date(dt)
+    Dates.lastdayofquarter(dt::QuarterlyDate) = Dates.lastdayofquarter(Date(dt))
+    
     # arithmetics
     Base.:+(dt::QuarterlyDate, q::Quarter) = QuarterlyDate(UTQ(value(dt) + value(q)))
     Base.:-(dt::QuarterlyDate, q::Quarter) = QuarterlyDate(UTQ(value(dt) - value(q)))
@@ -228,10 +239,7 @@ module MonthlyDates
     	Int64(div(value(b - a), 4 * value(c)))
     end
 
-    # adjusters
-    Dates.firstdayofquarter(dt::QuarterlyDate) = Date(dt)
-    Dates.lastdayofquarter(dt::QuarterlyDate) = Dates.lastdayofquarter(Date(dt))
-    
+
     # parse
     @inline function Dates.tryparsenext(d::DatePart{'q'}, str, i, len)
         return Dates.tryparsenext_base10(str, i, len, Dates.min_width(d), Dates.max_width(d))

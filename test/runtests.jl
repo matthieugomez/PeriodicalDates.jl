@@ -23,6 +23,8 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 @test_throws InexactError Quarter(Month(4))
 @test replstr(Quarter(1)) == "1 quarter"
 @test replstr(Quarter(2)) == "2 quarters"
+@test trunc(Date(1990, 5), Quarter) == Date(1990, 4)
+@test trunc(DateTime(1990, 5), Quarter) == DateTime(1990, 4)
 
 ##############################################################################
 ##
@@ -68,6 +70,10 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 @test Year(MonthlyDate(1990, 1)) == Year(1990)
 @test Quarter(MonthlyDate(1990, 1)) == Quarter(1)
 @test Month(MonthlyDate(1990, 1)) == Month(1)
+
+@test trunc(MonthlyDate(1990, 5), Year) == MonthlyDate(1990, 1)
+@test trunc(MonthlyDate(1990, 5), Quarter) == MonthlyDate(1990, 4)
+@test trunc(MonthlyDate(1990, 5), Month) == MonthlyDate(1990, 5)
 
 # adjusters
 @test firstdayofmonth(MonthlyDate(1990, 3)) == Date(1990, 3, 1)
@@ -167,6 +173,9 @@ CSV.write(io, df)
 
 @test Year(QuarterlyDate(1990, 1)) == Year(1990)
 @test Quarter(QuarterlyDate(1990, 1)) == Quarter(1)
+
+@test trunc(QuarterlyDate(1990, 3), Year) == QuarterlyDate(1990, 1)
+@test trunc(QuarterlyDate(1990, 3), Quarter) == QuarterlyDate(1990, 3)
 
 # adjusters
 @test firstdayofquarter(QuarterlyDate(1990, 3)) == Date(1990, 7, 1)

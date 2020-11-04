@@ -38,6 +38,9 @@ Dates.days(x::Quarter) = Dates.days(Month(x))
 Dates.periodisless(::Year, ::Quarter) = false
 Dates.periodisless(::Period, ::Quarter) = true
 Dates.periodisless(::Quarter, ::Month) = false
+Dates.trunc(dt::Date, ::Type{Quarter}) = firstdayofquarter(dt)
+Dates.trunc(dt::DateTime, ::Type{Quarter}) = DateTime(trunc(Date(dt), Quarter))
+
 # rounding
 Base.floor(dt::Date, p::Quarter) = floor(dt, Month(p))
 
