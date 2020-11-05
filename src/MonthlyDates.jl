@@ -79,10 +79,10 @@ module MonthlyDates
     Dates.trunc(dt::MonthlyDate, ::Type{Month}) = dt
 
     # adjusters
-    Dates.firstdayofquarter(dt::MonthlyDate) = Dates.firstdayofquarter(Date(dt))
-    Dates.lastdayofquarter(dt::MonthlyDate) = Dates.lastdayofquarter(Date(dt))
+    Dates.firstdayofquarter(dt::MonthlyDate) = firstdayofquarter(Date(dt))
+    Dates.lastdayofquarter(dt::MonthlyDate) = lastdayofquarter(Date(dt))
     Dates.firstdayofmonth(dt::MonthlyDate) = Date(dt)
-    Dates.lastdayofmonth(dt::MonthlyDate) = Dates.lastdayofmonth(Date(dt))
+    Dates.lastdayofmonth(dt::MonthlyDate) = lastdayofmonth(Date(dt))
 
     # arithmetics
     Base.:+(dt::MonthlyDate, m::Month) = MonthlyDate(UTm(value(dt) + value(m)))
@@ -240,7 +240,7 @@ module MonthlyDates
 
     # adjusters
     Dates.firstdayofquarter(dt::QuarterlyDate) = Date(dt)
-    Dates.lastdayofquarter(dt::QuarterlyDate) = Dates.lastdayofquarter(Date(dt))
+    Dates.lastdayofquarter(dt::QuarterlyDate) = lastdayofquarter(Date(dt))
     
     # arithmetics
     Base.:+(dt::QuarterlyDate, q::Quarter) = QuarterlyDate(UTQ(value(dt) + value(q)))
