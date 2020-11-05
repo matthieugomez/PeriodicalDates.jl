@@ -74,9 +74,9 @@ module MonthlyDates
     Quarter(dt::MonthlyDate) = Quarter(quarterofyear(dt))
     Dates.Year(dt::MonthlyDate) = Year(year(dt))
 
-    Dates.trunc(dt::MonthlyDate, ::Type{Year}) = MonthlyDate(year(dt), 1)
-    Dates.trunc(dt::MonthlyDate, ::Type{Quarter}) = MonthlyDate(year(dt), 1 + 3 * (quarterofyear(dt) - 1))
-    Dates.trunc(dt::MonthlyDate, ::Type{Month}) = dt
+    Base.trunc(dt::MonthlyDate, ::Type{Year}) = MonthlyDate(year(dt), 1)
+    Base.trunc(dt::MonthlyDate, ::Type{Quarter}) = MonthlyDate(year(dt), 1 + 3 * (quarterofyear(dt) - 1))
+    Base.trunc(dt::MonthlyDate, ::Type{Month}) = dt
 
     # adjusters
     Dates.firstdayofquarter(dt::MonthlyDate) = firstdayofquarter(Date(dt))
@@ -213,13 +213,14 @@ module MonthlyDates
     Base.convert(::Type{QuarterlyDate}, dt::DateTime) = QuarterlyDate(year(dt), quarterofyear(dt))
     Base.convert(::Type{QuarterlyDate}, x::Quarter) = QuarterlyDate(UTInstant(x))
 
-    function Dates.yearmonth(dt::QuarterlyDate)
+    # should not be yearmonth since month of QuarterlyDate not defined
+    function yearquarter(dt::QuarterlyDate)
         y, q = divrem(value(dt) - 1, 4)
-        return 1 + y, 1 + 3 * q
+        return 1 + y, 1 + q
     end
     Base.convert(::Type{MonthlyDate}, dt::QuarterlyDate) = MonthlyDate(UTm(((value(dt) - 1) * 3 + 1)))
-    Base.convert(::Type{Date}, dt::QuarterlyDate) = Date(yearmonth(dt)...)
-    Base.convert(::Type{DateTime}, dt::QuarterlyDate) = DateTime(yearmonth(dt)...)
+    Base.convert(::Type{Date}, dt::QuarterlyDate) = ((y, q) = yearquarter(dt) ; return Date(y, 1 + (q - 1) * 3))
+    Base.convert(::Type{DateTime}, dt::QuarterlyDate) = ((y, q) = yearquarter(dt) ; return DateTime(y, 1 + (q - 1) * 3))
     Base.convert(::Type{Quarter}, dt::QuarterlyDate) =  Quarter(value(dt))
 
     Base.promote_rule(::Type{QuarterlyDate}, x::Type{MonthlyDate}) = MonthlyDate
@@ -230,13 +231,13 @@ module MonthlyDates
     Dates.zero(::Type{QuarterlyDate}) = Quarter(0)
 
     #accessors (only bigger periods)
-    Dates.month(dt::QuarterlyDate) = 1 + 3 * rem(value(dt) - 1, 4)
+    Dates.month(dt::QuarterlyDate) = error("No method matching month(QuarterlyDate)")
     Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
     Dates.quarterofyear(dt::QuarterlyDate) = 1 + rem(value(dt) - 1, 4)
     Quarter(dt::QuarterlyDate) = Quarter(quarterofyear(dt))
     Dates.Year(dt::QuarterlyDate) = Year(year(dt))
-    Dates.trunc(dt::QuarterlyDate, ::Type{Year}) = QuarterlyDate(year(dt), 1)
-    Dates.trunc(dt::QuarterlyDate, ::Type{Quarter}) = dt
+    Base.trunc(dt::QuarterlyDate, ::Type{Year}) = QuarterlyDate(year(dt), 1)
+    Base.trunc(dt::QuarterlyDate, ::Type{Quarter}) = dt
 
     # adjusters
     Dates.firstdayofquarter(dt::QuarterlyDate) = Date(dt)
@@ -321,9 +322,9 @@ module MonthlyDates
 
     # show
     function Base.print(io::IO, dt::QuarterlyDate)
-        y,m = yearmonth(dt)
+        y = year(dt)
+        q = quarterofyear(dt)
         yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
-        q = (m - 1) ÷ 3 + 1
         print(io, "$(yy)-Q$q")
     end
     Base.show(io::IO, ::MIME"text/plain", dt::QuarterlyDate) = print(io, dt)

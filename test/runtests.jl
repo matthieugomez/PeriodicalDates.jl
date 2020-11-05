@@ -71,15 +71,18 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 @test Quarter(MonthlyDate(1990, 1)) == Quarter(1)
 @test Month(MonthlyDate(1990, 1)) == Month(1)
 
-@test trunc(MonthlyDate(1990, 5), Year) == MonthlyDate(1990, 1)
-@test trunc(MonthlyDate(1990, 5), Quarter) == MonthlyDate(1990, 4)
-@test trunc(MonthlyDate(1990, 5), Month) == MonthlyDate(1990, 5)
-
-# adjusters
 @test firstdayofmonth(MonthlyDate(1990, 3)) == Date(1990, 3, 1)
 @test lastdayofmonth(MonthlyDate(2000, 2)) == Date(2000, 2, 29)
 @test firstdayofquarter(MonthlyDate(2000, 2)) == Date(2000, 1, 1)
 @test lastdayofquarter(MonthlyDate(2000, 2)) == Date(2000, 3, 31)
+@test monthname(MonthlyDate(2000, 2)) == "February"
+
+
+# adjusters
+@test trunc(MonthlyDate(1990, 5), Year) == MonthlyDate(1990, 1)
+@test trunc(MonthlyDate(1990, 5), Quarter) == MonthlyDate(1990, 4)
+@test trunc(MonthlyDate(1990, 5), Month) == MonthlyDate(1990, 5)
+
 
 # arithmetic
 @test MonthlyDate(1990, 1) + Year(3) == MonthlyDate(1993, 1)
@@ -168,7 +171,6 @@ CSV.write(io, df)
 @test zero(QuarterlyDate) == Quarter(0)
 # accessor
 @test year(QuarterlyDate(1990, 4)) == 1990
-@test month(QuarterlyDate(1990, 4)) == 10
 @test quarterofyear(QuarterlyDate(1990, 4)) == 4
 
 @test Year(QuarterlyDate(1990, 1)) == Year(1990)
