@@ -35,7 +35,7 @@ module MonthlyDates
     """
     `MonthlyDate(y, [m]) -> MonthlyDate`
 
-    Construct a `MonthlyDate` type by parts.
+    Construct a `MonthlyDate` type by parts. Arguments must be convertible to `Int64`
     """
     function MonthlyDate(y::Int, m::Int = 1)
         Dates.validargs(MonthlyDate, y, m)
@@ -46,8 +46,7 @@ module MonthlyDates
 
     """
     `MonthlyDate(dt::Date) -> MonthlyDate`
-    
-    Convert a `Date` to a `MonthlyDate`
+    Convert a `TimeType` to a `MonthlyDate`
     """
     MonthlyDate(dt::TimeType) = convert(MonthlyDate, dt)
 
@@ -118,12 +117,30 @@ module MonthlyDates
         out === nothing ? nothing : MonthlyDate(out)
     end
 
+    """
+    MonthlyDate(d::AbstractString, format::AbstractString; locale="english") -> MonthlyDate
 
+    Construct a Date by parsing the date string following the pattern given in the
+    `format` string.
+
+    This method creates a `DateFormat` object each time it is called. If you are parsing many date strings of the same format, consider creating a `DateFormat` object once and using that as the second argument instead.
+
+    ### Examples
+    ```julia
+    julia> MonthlyDate("1990-01", "yyy-mm")
+    ```
+    ```
+    """
     function MonthlyDate(d::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
         parse(MonthlyDate, d, DateFormat(format, locale))
     end
 
+    """
+    Monthly Date(d::AbstractString, df::DateFormat) -> MonthlyDate
+
+    Parse a date from a date string `d` using a `DateFormat` object `df`.
+    """
     function MonthlyDate(d::AbstractString, format::DateFormat = MonthlyDateFormat)
         parse(MonthlyDate, d, format)
     end
@@ -176,7 +193,7 @@ module MonthlyDates
     """
     `QuarterlyDate(y, [q]) -> QuarterlyDate`
     
-    Construct a `QuaterlyDate` type by parts.
+    Construct a `QuaterlyDate` type by parts. Arguments must be convertible to `Int64`
     """
     function QuarterlyDate(y::Int, q::Int = 1)
         Dates.validargs(QuarterlyDate, y, q)
@@ -186,9 +203,9 @@ module MonthlyDates
     QuarterlyDate(y, q = 1) = QuarterlyDate(Int64(y), Int64(q))
 
     """
-    `QuarterlyDate(dt::Date) -> QuarterlyDate`
+    `QuarterlyDate(dt::TimeType) -> QuarterlyDate`
     
-    Convert a `Date` to a `QuarterlyDate`
+    Convert a `TimeType` to a `QuarterlyDate`
     """
     QuarterlyDate(dt::TimeType) = convert(QuarterlyDate, dt)
     Base.convert(::Type{QuarterlyDate}, dt::MonthlyDate) = QuarterlyDate(UTQ(((value(dt) - 1) ÷ 3 + 1)))
@@ -274,11 +291,30 @@ module MonthlyDates
         end
     end
 
+    """
+    QuarterlyDate(d::AbstractString, format::AbstractString; locale="english") -> QuarterlyDate
+
+    Construct a Date by parsing the date string following the pattern given in the
+    `format` string.
+
+    This method creates a `DateFormat` object each time it is called. If you are parsing many date strings of the same format, consider creating a `DateFormat` object once and using that as the second argument instead.
+
+    ### Examples
+    ```julia
+    julia> QuarterlyDate("1990-01", "yyy-mm")
+    julia> QuarterlyDate("1990-Q1", "yyy-Qq")
+    ```
+    """
     function QuarterlyDate(d::AbstractString, format::AbstractString; 
         locale::Dates.Locale = Dates.ENGLISH)
         parse(QuarterlyDate, d, DateFormat(format, locale))
     end
 
+    """
+    QuarterlyDate(d::AbstractString, df::DateFormat) -> QuarterlyDate
+
+    Parse a date from a date string `d` using a `DateFormat` object `df`.
+    """
     function QuarterlyDate(d::AbstractString, format::DateFormat = QuarterlyDateFormat)
         parse(QuarterlyDate, d, format)
     end
