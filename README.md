@@ -16,8 +16,8 @@ This packages makes it easier to work with monthly or quarterly dates. It define
 	julia> dtm = MonthlyDate("1990-01")
 	# or any other DateFormat
 	julia> dtm = MonthlyDate("1990/01", "yyyy/mm")
+	# Arithmetic works as expected
 	julia> dtm + Month(1)
-	# 1990-02
 	julia> Date(dtm)
 	# 1990-01-01
 
@@ -33,6 +33,7 @@ This packages makes it easier to work with monthly or quarterly dates. It define
 	julia> dtq = QuarterlyDate("1990-Q1") 
 	# or any other DateFormat
 	julia> dtq = QuarterlyDate("1990/04", "yyyy/mm")
+	# Arithmetic works as expected
 	julia> dtq + Quarter(3)
 	julia> Date(dtq)
 	# 1990-04-01
