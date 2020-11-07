@@ -208,8 +208,8 @@ module MonthlyDates
     """
     QuarterlyDate(dt::TimeType) = convert(QuarterlyDate, dt)
     Base.convert(::Type{QuarterlyDate}, dt::MonthlyDate) = QuarterlyDate(UTQ(((value(dt) - 1) ÷ 3 + 1)))
-    Base.convert(::Type{QuarterlyDate}, dt::Date) = QuarterlyDate(year(dt), quarter(dt))
-    Base.convert(::Type{QuarterlyDate}, dt::DateTime) = QuarterlyDate(year(dt), quarter(dt))
+    Base.convert(::Type{QuarterlyDate}, dt::Date) = QuarterlyDate(year(dt), quarterofyear(dt))
+    Base.convert(::Type{QuarterlyDate}, dt::DateTime) = QuarterlyDate(year(dt), quarterofyear(dt))
     Base.convert(::Type{QuarterlyDate}, x::Quarter) = QuarterlyDate(UTInstant(x))
 
     # should not be yearmonth since month of QuarterlyDate not defined
