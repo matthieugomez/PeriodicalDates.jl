@@ -8,7 +8,7 @@ module MonthlyDates
     else
         include("Quarter.jl")
     end
-
+    using RecipesBase
     ##############################################################################
     ##
     ## MonthlyDate
