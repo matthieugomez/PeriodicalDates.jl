@@ -168,8 +168,8 @@ module MonthlyDates
     #Plot
     # Issue is that I would like to choose ticks myself. Or at least convert depending on whether all ticks are Integer or not, which is not possible
     @recipe function f(::Type{MonthlyDate}, dt::MonthlyDate)
-	   (value, dt -> string(MonthlyDate(UTM(round(dt)))))
-	end
+        (value, dt -> string(MonthlyDate(UTM(round(dt)))))
+    end
 
 	export MonthlyDate
 
