@@ -171,7 +171,7 @@ module MonthlyDates
         (value, dt -> string(MonthlyDate(UTM(round(dt)))))
     end
 
-	export MonthlyDate
+    export MonthlyDate
 
     ##############################################################################
     ##
