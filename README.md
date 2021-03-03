@@ -22,7 +22,8 @@ This packages makes it easier to work with monthly or quarterly dates. It define
 	# 1990-01-01
 
 	```
-- A `QuarterlyDate <: TimeType` type
+	
+- A `QuarterlyDate <: TimeType` type (for Julia v1.6 and above)
 
 	```julia
 	julia> using Dates, MonthlyDates
