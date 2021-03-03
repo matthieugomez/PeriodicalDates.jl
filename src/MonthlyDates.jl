@@ -24,7 +24,6 @@ module MonthlyDates
         nothing
     end
 
-
     """
     `MonthlyDate(y, [m]) -> MonthlyDate`
 
@@ -153,9 +152,7 @@ module MonthlyDates
         mm = lpad(m, 2, "0")
         print(io, "$(yy)-$mm")
     end
-
     Base.show(io::IO, ::MIME"text/plain", dt::MonthlyDate) = print(io, dt)
-
     if VERSION >= v"1.5-"
         Base.show(io::IO, dt::MonthlyDate) = print(io, MonthlyDate, "(\"", dt, "\")")
     else
@@ -165,8 +162,8 @@ module MonthlyDates
         Base.typeinfo_implicit(::Type{MonthlyDate}) = true
     end
 
-    #Plot
-    # Issue is that I would like to choose ticks myself. Or at least convert depending on whether all ticks are Integer or not, which is not possible
+    # plot
+    # I would like to choose ticks myself. Or at least convert depending on whether all ticks are Integer or not, which is not possible
     @recipe function f(::Type{MonthlyDate}, dt::MonthlyDate)
         (value, dt -> string(MonthlyDate(UTM(round(dt)))))
     end
@@ -334,23 +331,20 @@ module MonthlyDates
             yy = y < 0 ? @sprintf("%05i", y) : lpad(y, 4, "0")
             print(io, "$(yy)-Q$q")
         end
-        
         Base.show(io::IO, ::MIME"text/plain", dt::QuarterlyDate) = print(io, dt)
         if VERSION >= v"1.5-"
             Base.show(io::IO, dt::QuarterlyDate) = print(io, QuarterlyDate, "(\"", dt, "\")")
         else
             Base.show(io::IO, dt::QuarterlyDate) = print(io, dt)
         end
-      
         if VERSION >= v"1.4-"
             Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
         end
 
-        #Plot
+        # plot
         @recipe function f(::Type{QuarterlyDate}, x::QuarterlyDate)
             (value, dt -> string(QuarterlyDate(UTQ(round(dt)))))
         end
-
 
         # executed at runtime to avoid issues with precompiling dicts
         function __init__()
