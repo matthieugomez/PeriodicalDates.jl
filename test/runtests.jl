@@ -58,7 +58,9 @@ end
 
 # adjusters
 @test trunc(MonthlyDate(1990, 5), Year) == MonthlyDate(1990, 1)
-@test trunc(MonthlyDate(1990, 5), Quarter) == MonthlyDate(1990, 4)
+if isdefined(Dates, :Quarter)
+	@test trunc(MonthlyDate(1990, 5), Quarter) == MonthlyDate(1990, 4)
+end
 @test trunc(MonthlyDate(1990, 5), Month) == MonthlyDate(1990, 5)
 
 
