@@ -162,11 +162,38 @@ module MonthlyDates
         Base.typeinfo_implicit(::Type{MonthlyDate}) = true
     end
 
-    # plot
-    # I would like to choose ticks myself. Or at least convert depending on whether all ticks are Integer or not, which is not possible
-    @recipe function f(::Type{MonthlyDate}, dt::MonthlyDate)
-        (value, dt -> string(MonthlyDate(UTM(round(dt)))))
+    function optimize_monthlydate_ticks(a_min, a_max; k_min = 2, k_max = 4)
+        Δt = a_max - a_min
+        if Δt > Dates.Month(12 * k_min)
+            P = Dates.Year
+            steplength = Δt / (k_max * Month(Year(1)))
+        else
+            P = Dates.Month
+            steplength = Δt / (k_max * Month(1))
+        end
+        steplength = P(max(1, Int(round(steplength))))
+        period_hierarchy = [Dates.Month, Dates.Year]
+        i = findfirst(period_hierarchy .== P)
+        start = MonthlyDate((PH(a_min) for PH in period_hierarchy[end:-1:i])...) + P(1)
+        ticks = collect(start:steplength:a_max)
+        labels = string.(MonthlyDate.(ticks))
+        return Dates.value.(ticks), labels
     end
+
+    @recipe function f(::Type{T}, val::T) where T <: AbstractArray{MonthlyDate}
+        MonthlyDates.optimize_monthlydate_ticks(minimum(val), maximum(val))[2]
+    end
+
+
+    ArrowTypes.ArrowType(::Type{MonthlyDate}) = TIME
+    ArrowTypes.toarrow(x::MonthlyDate) = convert(TIME, convert(Date, x))
+    const TIME_SYMBOL = Symbol("JuliaLang.Time")
+    ArrowTypes.arrowname(::Type{MonthlyDate}) = TIME_SYMBOL
+    ArrowTypes.JuliaType(::Val{TIME_SYMBOL}, S) = MonthlyDate
+    ArrowTypes.fromarrow(::Type{MonthlyDate}, x::TIME) = convert(MonthlyDate, x)
+    ArrowTypes.default(::Type{MonthlyDate}) = MonthlyDate(1,1)
+
+
 
     export MonthlyDate
 
@@ -332,14 +359,8 @@ module MonthlyDates
             print(io, "$(yy)-Q$q")
         end
         Base.show(io::IO, ::MIME"text/plain", dt::QuarterlyDate) = print(io, dt)
-        if VERSION >= v"1.5-"
-            Base.show(io::IO, dt::QuarterlyDate) = print(io, QuarterlyDate, "(\"", dt, "\")")
-        else
-            Base.show(io::IO, dt::QuarterlyDate) = print(io, dt)
-        end
-        if VERSION >= v"1.4-"
-            Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
-        end
+        Base.show(io::IO, dt::QuarterlyDate) = print(io, QuarterlyDate, "(\"", dt, "\")")
+        Base.typeinfo_implicit(::Type{QuarterlyDate}) = true
 
         # plot
         @recipe function f(::Type{QuarterlyDate}, x::QuarterlyDate)

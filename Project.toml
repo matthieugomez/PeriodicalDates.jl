@@ -7,11 +7,14 @@ version = "1.0.0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+PlotUtils = "995b91a9-d308-5afd-9ec6-746e21dbc043"
+RecipesPipeline = "01d81517-befc-4cb6-b9ec-a95719d0359c"
 
 
 [compat]
 julia = "1"
 RecipesBase = "1"
+PlotUtils = "1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
