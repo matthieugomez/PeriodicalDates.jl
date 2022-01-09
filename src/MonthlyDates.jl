@@ -1,8 +1,10 @@
 module MonthlyDates
-    using Printf
-    using Dates
-    import Dates: UTInstant, value, DatePart
-    using RecipesBase
+    using Printf: @sprintf
+    using Dates: Dates, TimeType, UTInstant, Year, Month, Day, Date, DateTime, value, DatePart, @dateformat_str, DateFormat, yearmonth, month, year, quarterofyear, lastdayofmonth, firstdayofmonth, firstdayofquarter, lastdayofquarter
+    if VERSION >= v"1.6"
+        using Dates: Quarter
+    end
+    using RecipesBase: @recipe 
     ##############################################################################
     ##
     ## MonthlyDate
@@ -83,7 +85,7 @@ module MonthlyDates
     # arithmetics
     Base.:+(dt::MonthlyDate, m::Month) = MonthlyDate(UTM(value(dt) + value(m)))
     Base.:-(dt::MonthlyDate, m::Month) = MonthlyDate(UTM(value(dt) - value(m)))
-    if isdefined(Dates, :Quarter)
+    if VERSION >= v"1.6"
         Base.:+(dt::MonthlyDate, p::Quarter) = dt + Month(p)
         Base.:-(dt::MonthlyDate, p::Quarter) = dt - Month(p)
     end
@@ -94,7 +96,7 @@ module MonthlyDates
     function Dates.guess(a::MonthlyDate, b::MonthlyDate, c::Month)
     	Int64(div(value(b - a), value(c)))
     end
-    if isdefined(Dates, :Quarter)
+    if VERSION >= v"1.6"
         function Dates.guess(a::MonthlyDate, b::MonthlyDate, c::Quarter)
         	Int64(div(value(b - a), 3 * value(c)))
         end
@@ -175,7 +177,7 @@ module MonthlyDates
     ## QuarterlyDate
     ##
     ##############################################################################
-    if isdefined(Dates, :Quarter)
+    if VERSION >= v"1.6"
         """
         QuarterlyDate
 
