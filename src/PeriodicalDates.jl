@@ -340,8 +340,7 @@ module PeriodicalDates
     """
     YearlyDate
 
-    YearlyDate wraps a UTInstant{Year} and interprets it according to the proleptic
-    Gregorian calendar.
+    YearlyDate wraps a UTInstant{Year}
     """
     struct YearlyDate <: TimeType
         instant::UTInstant{Year}
@@ -351,7 +350,7 @@ module PeriodicalDates
     """
     `YearlyDate(y) -> YearlyDate`
     
-    Construct a `YearlyDate` type by parts. Arguments must be convertible to `Int64`
+    Construct a `YearlyDate` type. Argument must be convertible to `Int64`
     """
     function YearlyDate(y::Int)
         YearlyDate(UTY(y))

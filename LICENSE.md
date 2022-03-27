@@ -1,4 +1,4 @@
-The MonthlyDates.jl package is licensed under the MIT "Expat" License:
+The PeriodicalDates.jl package is licensed under the MIT "Expat" License:
 
 > Copyright (c) 2020: Matthieu Gomez.
 >
