@@ -51,3 +51,5 @@ This packages makes it easier to work with monthly, quarterly, or yearly dates. 
 	```
 
 Please open an issue or submit a pull request if you need more methods to be defined.
+
+This package was formerly registered under the name `MonthlyDates.jl'
