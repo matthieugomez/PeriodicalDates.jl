@@ -39,7 +39,15 @@ This packages makes it easier to work with monthly or quarterly dates. It define
 	# 1990-04-01
 	```
 
-- A `YearlyDate <: TimeType` type for consistency
+- A `YearlyDate <: TimeType` type, mainly for consistency
 
+	```julia
+	julia> using Dates, MonthlyDates
+	julia> dty = YearlyDate(1990)
+	# Arithmetic works as expected
+	julia> dty + Year(1)
+	julia> Date(dty)
+	# 1990-01-01
+	```
 
 Please open an issue or submit a pull request if you need more methods to be defined.
