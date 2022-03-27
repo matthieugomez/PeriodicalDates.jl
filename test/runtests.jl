@@ -1,4 +1,4 @@
-using Test, Dates, CSV, MonthlyDates
+using Test, Dates, CSV, PeriodicalDates
 
 replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :displaysize => (24, 80), kv...), MIME("text/plain"), x), x)
 

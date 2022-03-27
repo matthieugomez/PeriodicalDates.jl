@@ -1,4 +1,4 @@
-module MonthlyDates
+module PeriodicalDates
     using Printf: @sprintf
     using Dates: Dates, TimeType, UTInstant, Year, Month, Day, Date, DateTime, value, DatePart, @dateformat_str, DateFormat, yearmonth, month, year, quarterofyear, lastdayofmonth, firstdayofmonth, firstdayofquarter, lastdayofquarter, quarter, Quarter
     using RecipesBase: @recipe 

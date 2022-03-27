@@ -1,5 +1,5 @@
-name = "MonthlyDates"
-uuid = "5be0b35e-b7aa-4f8f-be3c-193ee1a845a6"
+name = "PeriodicalDates"
+uuid = "276e7ca9-e0d7-440b-97bc-a6ae82f545b1"
 authors = ["matthieugomez"]
 version = "1.1.0"
 

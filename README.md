@@ -1,13 +1,13 @@
-[![Build status](https://github.com/matthieugomez/MonthlyDates.jl/workflows/CI/badge.svg)](https://github.com/matthieugomez/MonthlyDates.jl/actions)
+[![Build status](https://github.com/matthieugomez/PeriodicalDates.jl/workflows/CI/badge.svg)](https://github.com/matthieugomez/PeriodicalDates.jl/actions)
 
-# MonthlyDates.jl
+# PeriodicalDates.jl
 
-This packages makes it easier to work with monthly or quarterly dates. It defines two types:
+This packages makes it easier to work with monthly, quarterly, or yearly dates. It defines three types:
 
 
 - A `MonthlyDate <: TimeType` type
 	```julia
-	julia> using Dates, MonthlyDates
+	julia> using Dates, PeriodicalDates
 	julia> dt = MonthlyDate(1990, 1)
 	# Alternatively, construct from a date
 	julia> dtm = MonthlyDate(Date(1990, 1))
@@ -25,7 +25,7 @@ This packages makes it easier to work with monthly or quarterly dates. It define
 - A `QuarterlyDate <: TimeType` type
 
 	```julia
-	julia> using Dates, MonthlyDates
+	julia> using Dates, PeriodicalDates
 	julia> dtq = QuarterlyDate(1990, 1)
 	# Alternatively, construct from a date
 	julia> dtq = QuarterlyDate(Date(1990, 1))
@@ -42,7 +42,7 @@ This packages makes it easier to work with monthly or quarterly dates. It define
 - A `YearlyDate <: TimeType` type, mainly for consistency
 
 	```julia
-	julia> using Dates, MonthlyDates
+	julia> using Dates, PeriodicalDates
 	julia> dty = YearlyDate(1990)
 	# Arithmetic works as expected
 	julia> dty + Year(1)
