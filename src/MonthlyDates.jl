@@ -216,7 +216,6 @@ module MonthlyDates
     Dates.zero(::Type{QuarterlyDate}) = Quarter(0)
 
     #accessors (only bigger periods)
-    Dates.month(dt::QuarterlyDate) = error("No method matching month(QuarterlyDate)")
     Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
     # important since quarter may not reflect quarter of year actually
     Dates.quarter(dt::QuarterlyDate) = 1 + rem(value(dt) - 1, 4)

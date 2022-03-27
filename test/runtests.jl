@@ -218,6 +218,8 @@ CSV.write(io, df)
 
 # constructor
 @test Dates.value(YearlyDate(1)) == 1
+@test Dates.value(YearlyDate(Year(1990))) == 1990
+
 @test YearlyDate(1990) - YearlyDate(1989) == Year(1)
 @test YearlyDate(1990) >= YearlyDate(1989)
 
@@ -233,6 +235,8 @@ CSV.write(io, df)
 @test YearlyDate(DateTime(1990)) == YearlyDate(1990)
 @test YearlyDate(DateTime(1990, 2)) == YearlyDate(1990)
 @test MonthlyDate(YearlyDate(1990)) == MonthlyDate(1990)
+@test QuarterlyDate(YearlyDate(1990)) == QuarterlyDate(1990)
+
 @test YearlyDate(MonthlyDate(1990)) == YearlyDate(1990)
 @test YearlyDate(QuarterlyDate(1990)) == YearlyDate(1990)
 
@@ -245,6 +249,7 @@ CSV.write(io, df)
 @test YearlyDate(1990) != Date(1990, 1, 2)
 @test YearlyDate(1990) == MonthlyDate(1990, 1)
 @test YearlyDate(1990) != MonthlyDate(1990, 2)
+@test promote_rule(YearlyDate, QuarterlyDate) == QuarterlyDate
 @test promote_rule(YearlyDate, MonthlyDate) == MonthlyDate
 @test promote_rule(YearlyDate, Date) == Date
 @test promote_rule(YearlyDate, DateTime) == DateTime
