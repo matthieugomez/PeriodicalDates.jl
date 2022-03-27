@@ -119,94 +119,171 @@ CSV.write(io, df)
 ##############################################################################
 # constructur
 
-if isdefined(Dates, :Quarter)
 
-	@test_throws ArgumentError QuarterlyDate(1, 0)
-	@test_throws ArgumentError QuarterlyDate(1, 5)
+@test_throws ArgumentError QuarterlyDate(1, 0)
+@test_throws ArgumentError QuarterlyDate(1, 5)
 
-	@test Dates.value(QuarterlyDate(1, 1)) == 1
-	@test QuarterlyDate(1990, 1) - QuarterlyDate(1989, 1) == Quarter(4)
-	@test QuarterlyDate(1990, 1) >= QuarterlyDate(1989, 1)
+@test Dates.value(QuarterlyDate(1, 1)) == 1
+@test QuarterlyDate(1990, 1) - QuarterlyDate(1989, 1) == Quarter(4)
+@test QuarterlyDate(1990, 1) >= QuarterlyDate(1989, 1)
 
-	@test QuarterlyDate(Year(1990), Quarter(1)) == QuarterlyDate(1990, 1)
-	@test QuarterlyDate(1990.0, 1.0) == QuarterlyDate(1990, 1)
+@test QuarterlyDate(Year(1990), Quarter(1)) == QuarterlyDate(1990, 1)
+@test QuarterlyDate(1990.0, 1.0) == QuarterlyDate(1990, 1)
 
-	@test Date(QuarterlyDate(1990, 1)) == Date(1990, 1)
-	@test DateTime(QuarterlyDate(1990, 1)) == DateTime(1990, 1)
-	@test QuarterlyDate(Date(1990, 1)) == QuarterlyDate(1990, 1)
-	@test QuarterlyDate(DateTime(1990, 1)) == QuarterlyDate(1990, 1)
-	@test QuarterlyDate(Date(1990, 2)) == QuarterlyDate(1990, 1)
-	@test DateTime(QuarterlyDate(1990, 1)) == DateTime(1990, 1)
-	@test QuarterlyDate(DateTime(1990, 1)) == QuarterlyDate(1990, 1)
-	@test QuarterlyDate(DateTime(1990, 2)) == QuarterlyDate(1990, 1)
-	@test MonthlyDate(QuarterlyDate(1990, 1)) == MonthlyDate(1990, 1)
-	@test QuarterlyDate(MonthlyDate(1990, 1)) == QuarterlyDate(1990, 1)
-	# similar definition for convert(Day, Date(1990, 1, 1))
-	@test convert(Quarter, QuarterlyDate(1990, 1)) == Quarter(7957)
-	@test convert(QuarterlyDate, Quarter(7957)) == QuarterlyDate(1990, 1)
-
-
-	# promotion rules
-	@test QuarterlyDate(1990, 1) != Date(1990, 1, 2)
-	@test QuarterlyDate(1990, 1) == MonthlyDate(1990, 1)
-	@test QuarterlyDate(1990, 1) != MonthlyDate(1990, 2)
-	@test promote_rule(QuarterlyDate, MonthlyDate) == MonthlyDate
-	@test promote_rule(QuarterlyDate, Date) == Date
-	@test promote_rule(QuarterlyDate, DateTime) == DateTime
-	@test eps(QuarterlyDate) == Quarter(1)
-	@test zero(QuarterlyDate) == Quarter(0)
-	# accessor
-	@test year(QuarterlyDate(1990, 4)) == 1990
-	@test quarterofyear(QuarterlyDate(1990, 4)) == 4
-
-	@test Year(QuarterlyDate(1990, 1)) == Year(1990)
-	@test Quarter(QuarterlyDate(1990, 1)) == Quarter(1)
-
-	@test trunc(QuarterlyDate(1990, 3), Year) == QuarterlyDate(1990, 1)
-	@test trunc(QuarterlyDate(1990, 3), Quarter) == QuarterlyDate(1990, 3)
-
-	# adjusters
-	@test firstdayofquarter(QuarterlyDate(1990, 3)) == Date(1990, 7, 1)
-	@test lastdayofquarter(QuarterlyDate(1990, 3)) == Date(1990, 9, 30)
-
-	# arithmetic
-	@test QuarterlyDate(1990, 1) + Year(1) == QuarterlyDate(1991, 1)
-	@test QuarterlyDate(1990, 1) - Year(1) == QuarterlyDate(1989, 1)
-	@test QuarterlyDate(1990, 1) + Quarter(1) == QuarterlyDate(1990, 2)
-	@test QuarterlyDate(1990, 1) - Quarter(1) == QuarterlyDate(1989, 4)
-	@test QuarterlyDate(1990, 1) + Year(1) + Quarter(3) == QuarterlyDate(1991, 4)
-
-	# ranges
-	@test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1991, 1), step = Quarter(1))) == 5
-	@test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1991, 1), step = Quarter(2))) == 3
-	@test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1992, 1), step = Year(1))) == 3
+@test Date(QuarterlyDate(1990, 1)) == Date(1990, 1)
+@test DateTime(QuarterlyDate(1990, 1)) == DateTime(1990, 1)
+@test QuarterlyDate(Date(1990, 1)) == QuarterlyDate(1990, 1)
+@test QuarterlyDate(DateTime(1990, 1)) == QuarterlyDate(1990, 1)
+@test QuarterlyDate(Date(1990, 2)) == QuarterlyDate(1990, 1)
+@test DateTime(QuarterlyDate(1990, 1)) == DateTime(1990, 1)
+@test QuarterlyDate(DateTime(1990, 1)) == QuarterlyDate(1990, 1)
+@test QuarterlyDate(DateTime(1990, 2)) == QuarterlyDate(1990, 1)
+@test MonthlyDate(QuarterlyDate(1990, 1)) == MonthlyDate(1990, 1)
+@test QuarterlyDate(MonthlyDate(1990, 1)) == QuarterlyDate(1990, 1)
+# similar definition for convert(Day, Date(1990, 1, 1))
+@test convert(Quarter, QuarterlyDate(1990, 1)) == Quarter(7957)
+@test convert(QuarterlyDate, Quarter(7957)) == QuarterlyDate(1990, 1)
 
 
-	# io
-	@test replstr([QuarterlyDate(1990, 1)]) == "1-element $(string(Array{QuarterlyDate,1})):\n 1990-Q1"
+# promotion rules
+@test QuarterlyDate(1990, 1) != Date(1990, 1, 2)
+@test QuarterlyDate(1990, 1) == MonthlyDate(1990, 1)
+@test QuarterlyDate(1990, 1) != MonthlyDate(1990, 2)
+@test promote_rule(QuarterlyDate, MonthlyDate) == MonthlyDate
+@test promote_rule(QuarterlyDate, Date) == Date
+@test promote_rule(QuarterlyDate, DateTime) == DateTime
+@test eps(QuarterlyDate) == Quarter(1)
+@test zero(QuarterlyDate) == Quarter(0)
+# accessor
+@test year(QuarterlyDate(1990, 4)) == 1990
+@test quarterofyear(QuarterlyDate(1990, 4)) == 4
 
-	# parse
-	@test parse(QuarterlyDate, "1990-07", dateformat"yyyy-mm") == QuarterlyDate(1990, 3)
-	@test QuarterlyDate("1990-07", "yyyy-mm") == QuarterlyDate(1990, 3)
-	@test parse(QuarterlyDate,"1990-Q2", dateformat"yyyy-Qq") == QuarterlyDate(1990, 2)
-	@test tryparse(QuarterlyDate,"1990-Q2", dateformat"yyyy-Qq") == QuarterlyDate(1990, 2)
-	@test tryparse(QuarterlyDate,"1990-2", dateformat"yyyy-Qq") == nothing
-	@test tryparse(QuarterlyDate,"1990-Q2", dateformat"yyyy-mm") == nothing
-	@test QuarterlyDate("1990-Q2") == QuarterlyDate(1990, 2)
+@test Year(QuarterlyDate(1990, 1)) == Year(1990)
+@test Quarter(QuarterlyDate(1990, 1)) == Quarter(1)
 
-	@test QuarterlyDate("1990-Q2", "yyyy-Qq") == QuarterlyDate(1990, 2)
-	@test QuarterlyDate("1990/01", "y/m") == QuarterlyDate(1990, 1)
-	@test QuarterlyDate("1990m01", dateformat"y\mm") == QuarterlyDate(1990, 1)
-	@test QuarterlyDate("1990m07", dateformat"y\mm") == QuarterlyDate(1990, 3)
-	@test QuarterlyDate("1990-03", dateformat"y-q") == QuarterlyDate(1990, 3)
+@test trunc(QuarterlyDate(1990, 3), Year) == QuarterlyDate(1990, 1)
+@test trunc(QuarterlyDate(1990, 3), Quarter) == QuarterlyDate(1990, 3)
 
-	# formater
-	@test Dates.format(QuarterlyDate(1990, 3), dateformat"yyyy-Qq") == "1990-Q3"
+# adjusters
+@test firstdayofquarter(QuarterlyDate(1990, 3)) == Date(1990, 7, 1)
+@test lastdayofquarter(QuarterlyDate(1990, 3)) == Date(1990, 9, 30)
+
+# arithmetic
+@test QuarterlyDate(1990, 1) + Year(1) == QuarterlyDate(1991, 1)
+@test QuarterlyDate(1990, 1) - Year(1) == QuarterlyDate(1989, 1)
+@test QuarterlyDate(1990, 1) + Quarter(1) == QuarterlyDate(1990, 2)
+@test QuarterlyDate(1990, 1) - Quarter(1) == QuarterlyDate(1989, 4)
+@test QuarterlyDate(1990, 1) + Year(1) + Quarter(3) == QuarterlyDate(1991, 4)
+
+# ranges
+@test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1991, 1), step = Quarter(1))) == 5
+@test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1991, 1), step = Quarter(2))) == 3
+@test length(range(QuarterlyDate(1990, 1), QuarterlyDate(1992, 1), step = Year(1))) == 3
 
 
-	# csv
-	io = IOBuffer()
-	df = (x = [QuarterlyDate(1990, 1), QuarterlyDate(1990, 2)], )
-	CSV.write(io, df) 
-	@test String(take!(io)) == "x\n1990-Q1\n1990-Q2\n"
-end
+# io
+@test replstr([QuarterlyDate(1990, 1)]) == "1-element $(string(Array{QuarterlyDate,1})):\n 1990-Q1"
+
+# parse
+@test parse(QuarterlyDate, "1990-07", dateformat"yyyy-mm") == QuarterlyDate(1990, 3)
+@test QuarterlyDate("1990-07", "yyyy-mm") == QuarterlyDate(1990, 3)
+@test parse(QuarterlyDate,"1990-Q2", dateformat"yyyy-Qq") == QuarterlyDate(1990, 2)
+@test tryparse(QuarterlyDate,"1990-Q2", dateformat"yyyy-Qq") == QuarterlyDate(1990, 2)
+@test tryparse(QuarterlyDate,"1990-2", dateformat"yyyy-Qq") == nothing
+@test tryparse(QuarterlyDate,"1990-Q2", dateformat"yyyy-mm") == nothing
+@test QuarterlyDate("1990-Q2") == QuarterlyDate(1990, 2)
+
+@test QuarterlyDate("1990-Q2", "yyyy-Qq") == QuarterlyDate(1990, 2)
+@test QuarterlyDate("1990/01", "y/m") == QuarterlyDate(1990, 1)
+@test QuarterlyDate("1990m01", dateformat"y\mm") == QuarterlyDate(1990, 1)
+@test QuarterlyDate("1990m07", dateformat"y\mm") == QuarterlyDate(1990, 3)
+@test QuarterlyDate("1990-03", dateformat"y-q") == QuarterlyDate(1990, 3)
+
+# formater
+@test Dates.format(QuarterlyDate(1990, 3), dateformat"yyyy-Qq") == "1990-Q3"
+
+
+# csv
+io = IOBuffer()
+df = (x = [QuarterlyDate(1990, 1), QuarterlyDate(1990, 2)], )
+CSV.write(io, df) 
+@test String(take!(io)) == "x\n1990-Q1\n1990-Q2\n"
+
+
+##############################################################################
+##
+## YearlyDate
+##
+##############################################################################
+
+# constructor
+@test Dates.value(YearlyDate(1)) == 1
+@test YearlyDate(1990) - YearlyDate(1989) == Year(1)
+@test YearlyDate(1990) >= YearlyDate(1989)
+
+@test QuarterlyDate(Year(1990)) == QuarterlyDate(1990)
+@test YearlyDate(1990.0) == YearlyDate(1990)
+
+@test Date(YearlyDate(1990)) == Date(1990)
+@test DateTime(YearlyDate(1990)) == DateTime(1990)
+@test YearlyDate(Date(1990)) == YearlyDate(1990)
+@test YearlyDate(DateTime(1990)) == YearlyDate(1990)
+@test YearlyDate(Date(1990)) == YearlyDate(1990)
+@test DateTime(YearlyDate(1990)) == DateTime(1990)
+@test YearlyDate(DateTime(1990)) == YearlyDate(1990)
+@test YearlyDate(DateTime(1990, 2)) == YearlyDate(1990)
+@test MonthlyDate(YearlyDate(1990)) == MonthlyDate(1990)
+@test YearlyDate(MonthlyDate(1990)) == YearlyDate(1990)
+@test YearlyDate(QuarterlyDate(1990)) == YearlyDate(1990)
+
+# similar definition for convert(Day, Date(1990))
+@test convert(Year, YearlyDate(1990)) == Year(1990)
+@test convert(YearlyDate, Year(1990)) == YearlyDate(1990)
+
+
+# promotion rules
+@test YearlyDate(1990) != Date(1990, 1, 2)
+@test YearlyDate(1990) == MonthlyDate(1990, 1)
+@test YearlyDate(1990) != MonthlyDate(1990, 2)
+@test promote_rule(YearlyDate, MonthlyDate) == MonthlyDate
+@test promote_rule(YearlyDate, Date) == Date
+@test promote_rule(YearlyDate, DateTime) == DateTime
+@test eps(YearlyDate) == Year(1)
+@test zero(YearlyDate) == Year(0)
+# accessor
+@test year(YearlyDate(1990)) == 1990
+
+@test Year(YearlyDate(1990)) == Year(1990)
+
+@test trunc(YearlyDate(1990), Year) == YearlyDate(1990)
+
+# arithmetic
+@test YearlyDate(1990) + Year(1) == YearlyDate(1991)
+@test YearlyDate(1990) - Year(1) == YearlyDate(1989)
+
+# ranges
+@test length(range(YearlyDate(1990), YearlyDate(1995), step = Year(1))) == 6
+@test length(range(YearlyDate(1990), YearlyDate(1995), step = Year(2))) == 3
+@test length(range(YearlyDate(1990), YearlyDate(1995), step = Year(1))) == 6
+
+
+# io
+@test replstr([YearlyDate(1990)]) == "1-element $(string(Array{YearlyDate,1})):\n 1990"
+
+# parse
+@test parse(YearlyDate, "1990", dateformat"yyyy") == YearlyDate(1990)
+@test YearlyDate("1990", "yyyy") == YearlyDate(1990)
+@test parse(YearlyDate,"1990", dateformat"yyyy") == YearlyDate(1990)
+@test tryparse(YearlyDate,"1990", dateformat"yyyy") == YearlyDate(1990)
+@test YearlyDate("1990") == YearlyDate(1990)
+
+# formater
+@test Dates.format(YearlyDate(1990), dateformat"yyyy-") == "1990-"
+
+
+# csv
+io = IOBuffer()
+df = (x = [YearlyDate(1990), YearlyDate(1991)], )
+CSV.write(io, df) 
+@test String(take!(io)) == "x\n1990\n1991\n"
+
