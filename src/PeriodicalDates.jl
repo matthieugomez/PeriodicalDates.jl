@@ -111,7 +111,7 @@ module PeriodicalDates
     """
     MonthlyDate(d::AbstractString, format::AbstractString; locale="english") -> MonthlyDate
 
-    Construct a Date by parsing the date string following the pattern given in the
+    Construct a `MonthlyDate` by parsing the date string following the pattern given in the
     `format` string.
 
     This method creates a `DateFormat` object each time it is called. If you are parsing many date strings of the same format, consider creating a `DateFormat` object once and using that as the second argument instead.
@@ -119,7 +119,6 @@ module PeriodicalDates
     ### Examples
     ```julia
     julia> MonthlyDate("1990-01", "yyy-mm")
-    ```
     ```
     """
     function MonthlyDate(d::AbstractString, format::AbstractString; 
@@ -130,7 +129,7 @@ module PeriodicalDates
     """
     Monthly Date(d::AbstractString, df::DateFormat) -> MonthlyDate
 
-    Parse a date from a date string `d` using a `DateFormat` object `df`.
+    Parse a MonthlyDate from a date string `d` using a `DateFormat` object `df`.
     """
     function MonthlyDate(d::AbstractString, format::DateFormat = MonthlyDateFormat)
         parse(MonthlyDate, d, format)
@@ -163,7 +162,7 @@ module PeriodicalDates
     """
     QuarterlyDate
 
-    QuarterlyDate wraps a UTInstant{Quarter} and interprets it according to the proleptic
+    `QuarterlyDate` wraps a UTInstant{Quarter} and interprets it according to the proleptic
     Gregorian calendar.
     """
     struct QuarterlyDate <: TimeType
@@ -282,7 +281,7 @@ module PeriodicalDates
     """
     QuarterlyDate(d::AbstractString, format::AbstractString; locale="english") -> QuarterlyDate
 
-    Construct a Date by parsing the date string following the pattern given in the
+    Construct a `QuarterlyDate` by parsing the date string following the pattern given in the
     `format` string.
 
     This method creates a `DateFormat` object each time it is called. If you are parsing many date strings of the same format, consider creating a `DateFormat` object once and using that as the second argument instead.
@@ -301,7 +300,7 @@ module PeriodicalDates
     """
     QuarterlyDate(d::AbstractString, df::DateFormat) -> QuarterlyDate
 
-    Parse a date from a date string `d` using a `DateFormat` object `df`.
+    Parse a QuarterlyDate from a date string `d` using a `DateFormat` object `df`.
     """
     function QuarterlyDate(d::AbstractString, format::DateFormat = QuarterlyDateFormat)
         parse(QuarterlyDate, d, format)
@@ -334,13 +333,14 @@ module PeriodicalDates
 
     ##############################################################################
     ##
-    ## YearlyDate
+    ## YearlyDate (more for consistency than anything else)
     ##
     ##############################################################################
     """
     YearlyDate
 
-    YearlyDate wraps a UTInstant{Year}
+    `YearlyDate` wraps a UTInstant{Year} and interprets it according to the proleptic
+    Gregorian calendar.
     """
     struct YearlyDate <: TimeType
         instant::UTInstant{Year}
@@ -364,16 +364,15 @@ module PeriodicalDates
     Convert a `TimeType` to a `YearlyDate`
     """
     YearlyDate(dt::TimeType) = convert(YearlyDate, dt)
-    Base.convert(::Type{YearlyDate}, dt::MonthlyDate) = YearlyDate(UTY(((value(dt) - 1) ÷ 12 + 1)))
     Base.convert(::Type{YearlyDate}, dt::QuarterlyDate) = YearlyDate(UTY(((value(dt) - 1) ÷ 4 + 1)))
-
+    Base.convert(::Type{YearlyDate}, dt::MonthlyDate) = YearlyDate(UTY(((value(dt) - 1) ÷ 12 + 1)))
     Base.convert(::Type{YearlyDate}, dt::Date) = YearlyDate(year(dt))
     Base.convert(::Type{YearlyDate}, dt::DateTime) = YearlyDate(year(dt))
     Base.convert(::Type{YearlyDate}, x::Year) = YearlyDate(UTInstant(x))
 
     # should not be yearmonth since month of YearlyDate not defined
-    Base.convert(::Type{MonthlyDate}, dt::YearlyDate) = MonthlyDate(UTM(((value(dt) - 1) * 12 + 1)))
     Base.convert(::Type{QuarterlyDate}, dt::YearlyDate) = QuarterlyDate(UTQ(((value(dt) - 1) * 4 + 1)))
+    Base.convert(::Type{MonthlyDate}, dt::YearlyDate) = MonthlyDate(UTM(((value(dt) - 1) * 12 + 1)))
     Base.convert(::Type{Date}, dt::YearlyDate) = Date(year(dt), 1)
     Base.convert(::Type{DateTime}, dt::YearlyDate) = DateTime(year(dt), 1)
     Base.convert(::Type{Year}, dt::YearlyDate) =  Year(value(dt))
@@ -419,15 +418,14 @@ module PeriodicalDates
     """
     YearlyDate(d::AbstractString, format::AbstractString; locale="english") -> YearlyDate
 
-    Construct a Date by parsing the date string following the pattern given in the
+    Construct a `YearlyDate` by parsing the date string following the pattern given in the
     `format` string.
 
     This method creates a `DateFormat` object each time it is called. If you are parsing many date strings of the same format, consider creating a `DateFormat` object once and using that as the second argument instead.
 
     ### Examples
     ```julia
-    julia> YearlyDate("1990-01", "yyy-mm")
-    julia> YearlyDate("1990-Q1", "yyy-Qq")
+    julia> YearlyDate("1990", "yyyy")
     ```
     """
     function YearlyDate(d::AbstractString, format::AbstractString; 
