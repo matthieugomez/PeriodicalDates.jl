@@ -39,7 +39,7 @@ This packages makes it easier to work with monthly, quarterly, or yearly dates. 
 	# 1990-04-01
 	```
 
-- A `YearlyDate <: TimeType` type, mainly for consistency
+- A `YearlyDate <: TimeType` type (for the sake of consistency)
 
 	```julia
 	julia> using Dates, PeriodicalDates
