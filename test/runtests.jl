@@ -7,7 +7,7 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 ## MonthlyDate
 ##
 ##############################################################################
-# constructur
+# constructor
 @test_throws ArgumentError MonthlyDate(1, 0)
 @test_throws ArgumentError MonthlyDate(1, 13)
 
@@ -44,9 +44,7 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 @test month(MonthlyDate(1990, 12)) == 12
 
 @test Year(MonthlyDate(1990, 1)) == Year(1990)
-if isdefined(Dates, :Quarter)
-	@test Quarter(MonthlyDate(1990, 1)) == Quarter(1)
-end
+@test Quarter(MonthlyDate(1990, 1)) == Quarter(1)
 @test Month(MonthlyDate(1990, 1)) == Month(1)
 
 @test firstdayofmonth(MonthlyDate(1990, 3)) == Date(1990, 3, 1)
@@ -58,9 +56,7 @@ end
 
 # adjusters
 @test trunc(MonthlyDate(1990, 5), Year) == MonthlyDate(1990, 1)
-if isdefined(Dates, :Quarter)
-	@test trunc(MonthlyDate(1990, 5), Quarter) == MonthlyDate(1990, 4)
-end
+@test trunc(MonthlyDate(1990, 5), Quarter) == MonthlyDate(1990, 4)
 @test trunc(MonthlyDate(1990, 5), Month) == MonthlyDate(1990, 5)
 
 
@@ -73,19 +69,15 @@ end
 @test MonthlyDate(1990, 1) + Month(13) == MonthlyDate(1991, 2)
 @test MonthlyDate(1990, 1) - Month(13) == MonthlyDate(1988, 12)
 @test MonthlyDate(1990, 1) - MonthlyDate(1989, 1) == Month(12)
-if isdefined(Dates, :Quarter)
-	@test MonthlyDate(1990, 1) + Quarter(1) == MonthlyDate(1990, 4)
-	@test MonthlyDate(1990, 1) - Quarter(1) == MonthlyDate(1989, 10)
-	@test MonthlyDate(1990, 1) + Quarter(2) + Month(2) == MonthlyDate(1990, 9)
-end
+@test MonthlyDate(1990, 1) + Quarter(1) == MonthlyDate(1990, 4)
+@test MonthlyDate(1990, 1) - Quarter(1) == MonthlyDate(1989, 10)
+@test MonthlyDate(1990, 1) + Quarter(2) + Month(2) == MonthlyDate(1990, 9)
 
 # ranges
 @test length(range(MonthlyDate(1990, 1), MonthlyDate(1991, 1), step = Month(1))) == 13
 @test length(range(MonthlyDate(1990, 1), MonthlyDate(1991, 1), step = Month(3))) == 5
 @test length(range(MonthlyDate(1990, 1), MonthlyDate(1992, 1), step = Year(1))) == 3
-if isdefined(Dates, :Quarter)
-	@test length(range(MonthlyDate(1990, 1), MonthlyDate(1991, 1), step = Quarter(1))) == 5
-end
+@test length(range(MonthlyDate(1990, 1), MonthlyDate(1991, 1), step = Quarter(1))) == 5
 
 
 # print
@@ -117,9 +109,7 @@ CSV.write(io, df)
 ## QuarterlyDate
 ##
 ##############################################################################
-# constructur
-
-
+# constructor
 @test_throws ArgumentError QuarterlyDate(1, 0)
 @test_throws ArgumentError QuarterlyDate(1, 5)
 

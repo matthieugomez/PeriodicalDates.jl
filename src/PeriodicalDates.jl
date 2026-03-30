@@ -118,7 +118,7 @@ module PeriodicalDates
 
     ### Examples
     ```julia
-    julia> MonthlyDate("1990-01", "yyy-mm")
+    julia> MonthlyDate("1990-01", "yyyy-mm")
     ```
     """
     function MonthlyDate(d::AbstractString, format::AbstractString; 
@@ -127,7 +127,7 @@ module PeriodicalDates
     end
 
     """
-    Monthly Date(d::AbstractString, df::DateFormat) -> MonthlyDate
+    MonthlyDate(d::AbstractString, df::DateFormat) -> MonthlyDate
 
     Parse a MonthlyDate from a date string `d` using a `DateFormat` object `df`.
     """
@@ -220,7 +220,7 @@ module PeriodicalDates
     Dates.quarter(dt::QuarterlyDate) = 1 + rem(value(dt) - 1, 4)
     Dates.quarterofyear(dt::QuarterlyDate) = quarter(dt)
 
-    Quarter(dt::QuarterlyDate) = Quarter(quarter(dt))
+    Dates.Quarter(dt::QuarterlyDate) = Quarter(quarter(dt))
     Dates.Year(dt::QuarterlyDate) = Year(year(dt))
     Base.trunc(dt::QuarterlyDate, ::Type{Year}) = QuarterlyDate(year(dt), 1)
     Base.trunc(dt::QuarterlyDate, ::Type{Quarter}) = dt
@@ -288,8 +288,8 @@ module PeriodicalDates
 
     ### Examples
     ```julia
-    julia> QuarterlyDate("1990-01", "yyy-mm")
-    julia> QuarterlyDate("1990-Q1", "yyy-Qq")
+    julia> QuarterlyDate("1990-01", "yyyy-mm")
+    julia> QuarterlyDate("1990-Q1", "yyyy-Qq")
     ```
     """
     function QuarterlyDate(d::AbstractString, format::AbstractString; 
