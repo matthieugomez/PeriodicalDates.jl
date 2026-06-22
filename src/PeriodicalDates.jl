@@ -45,7 +45,9 @@ module PeriodicalDates
     Base.convert(::Type{MonthlyDate}, dt::DateTime) = MonthlyDate(yearmonth(dt)...)
     Base.convert(::Type{MonthlyDate}, x::Month) = MonthlyDate(UTInstant(x))
 
-    Dates.yearmonth(dt::MonthlyDate) =  (1, 1) .+ divrem(value(dt) - 1, 12)
+    # Decompose with floored division (fld/mod/fldmod), not div/rem: only fld/mod
+    # round toward -∞, so year/period parts stay correct when value <= 0 (years <= 0).
+    Dates.yearmonth(dt::MonthlyDate) =  (1, 1) .+ fldmod(value(dt) - 1, 12)
     Base.convert(::Type{Date}, dt::MonthlyDate) = Date(yearmonth(dt)...)
     Base.convert(::Type{DateTime}, dt::MonthlyDate) = DateTime(yearmonth(dt)...)
     Base.convert(::Type{Month}, dt::MonthlyDate) = Month(value(dt))
@@ -57,8 +59,8 @@ module PeriodicalDates
     Dates.zero(::Type{MonthlyDate}) = Month(0)
    
     #accessors (only bigger periods)    
-    Dates.month(dt::MonthlyDate) = 1 + rem(value(dt) - 1, 12)
-    Dates.year(dt::MonthlyDate) =  1 + div(value(dt) - 1, 12)
+    Dates.month(dt::MonthlyDate) = 1 + mod(value(dt) - 1, 12)
+    Dates.year(dt::MonthlyDate) =  1 + fld(value(dt) - 1, 12)
     Dates.quarterofyear(dt::MonthlyDate) = 1 + div(month(dt) - 1, 3)
 
     Dates.Month(dt::MonthlyDate) = Month(month(dt))
@@ -192,14 +194,14 @@ module PeriodicalDates
     Convert a `TimeType` to a `QuarterlyDate`
     """
     QuarterlyDate(dt::TimeType) = convert(QuarterlyDate, dt)
-    Base.convert(::Type{QuarterlyDate}, dt::MonthlyDate) = QuarterlyDate(UTQ(((value(dt) - 1) ÷ 3 + 1)))
+    Base.convert(::Type{QuarterlyDate}, dt::MonthlyDate) = QuarterlyDate(UTQ(fld(value(dt) - 1, 3) + 1))
     Base.convert(::Type{QuarterlyDate}, dt::Date) = QuarterlyDate(year(dt), quarterofyear(dt))
     Base.convert(::Type{QuarterlyDate}, dt::DateTime) = QuarterlyDate(year(dt), quarterofyear(dt))
     Base.convert(::Type{QuarterlyDate}, x::Quarter) = QuarterlyDate(UTInstant(x))
 
     # should not be yearmonth since month of QuarterlyDate not defined
     function yearquarter(dt::QuarterlyDate)
-        y, q = divrem(value(dt) - 1, 4)
+        y, q = fldmod(value(dt) - 1, 4)
         return 1 + y, 1 + q
     end
     Base.convert(::Type{MonthlyDate}, dt::QuarterlyDate) = MonthlyDate(UTM(((value(dt) - 1) * 3 + 1)))
@@ -215,9 +217,9 @@ module PeriodicalDates
     Dates.zero(::Type{QuarterlyDate}) = Quarter(0)
 
     #accessors (only bigger periods)
-    Dates.year(dt::QuarterlyDate) = 1 + div(value(dt) - 1, 4)
+    Dates.year(dt::QuarterlyDate) = 1 + fld(value(dt) - 1, 4)
     # important since quarter may not reflect quarter of year actually
-    Dates.quarter(dt::QuarterlyDate) = 1 + rem(value(dt) - 1, 4)
+    Dates.quarter(dt::QuarterlyDate) = 1 + mod(value(dt) - 1, 4)
     Dates.quarterofyear(dt::QuarterlyDate) = quarter(dt)
 
     Dates.Quarter(dt::QuarterlyDate) = Quarter(quarter(dt))
@@ -322,7 +324,9 @@ module PeriodicalDates
         (value, dt -> string(QuarterlyDate(UTQ(round(dt)))))
     end
 
-    # executed at runtime to avoid issues with precompiling dicts
+    # Register the 'q' (quarter) format directive with Dates. This mutates global
+    # Dates state, so it must run in __init__ (at load time): such mutations would
+    # not persist if done during precompilation.
     function __init__()
         Dates.CONVERSION_SPECIFIERS['q'] = Quarter
         Dates.CONVERSION_DEFAULTS[Quarter] = Int64(1)
@@ -364,8 +368,8 @@ module PeriodicalDates
     Convert a `TimeType` to a `YearlyDate`
     """
     YearlyDate(dt::TimeType) = convert(YearlyDate, dt)
-    Base.convert(::Type{YearlyDate}, dt::QuarterlyDate) = YearlyDate(UTY(((value(dt) - 1) ÷ 4 + 1)))
-    Base.convert(::Type{YearlyDate}, dt::MonthlyDate) = YearlyDate(UTY(((value(dt) - 1) ÷ 12 + 1)))
+    Base.convert(::Type{YearlyDate}, dt::QuarterlyDate) = YearlyDate(UTY(fld(value(dt) - 1, 4) + 1))
+    Base.convert(::Type{YearlyDate}, dt::MonthlyDate) = YearlyDate(UTY(fld(value(dt) - 1, 12) + 1))
     Base.convert(::Type{YearlyDate}, dt::Date) = YearlyDate(year(dt))
     Base.convert(::Type{YearlyDate}, dt::DateTime) = YearlyDate(year(dt))
     Base.convert(::Type{YearlyDate}, x::Year) = YearlyDate(UTInstant(x))
@@ -449,7 +453,7 @@ module PeriodicalDates
         print(io, "$(yy)")
     end
     Base.show(io::IO, ::MIME"text/plain", dt::YearlyDate) = print(io, dt)
-    Base.show(io::IO, dt::YearlyDate) = print(io, dt)
+    Base.show(io::IO, dt::YearlyDate) = print(io, YearlyDate, "(\"", dt, "\")")
     Base.typeinfo_implicit(::Type{YearlyDate}) = true
 
     # plot
