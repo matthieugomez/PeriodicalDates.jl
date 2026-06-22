@@ -94,7 +94,7 @@ replstr(x, kv::Pair...) = sprint((io,x) -> show(IOContext(io, :limit => true, :d
 @test parse(MonthlyDate, "1990/01", dateformat"y/m") == MonthlyDate(1990, 1)
 @test parse(MonthlyDate, "1990m01", dateformat"y\mm") == MonthlyDate(1990, 1)
 
-@test tryparse(MonthlyDate, "1990-13") == nothing
+@test tryparse(MonthlyDate, "1990-13") === nothing
 @test tryparse(MonthlyDate, "1990/01", dateformat"y/m") == MonthlyDate(1990, 1)
 @test tryparse(MonthlyDate, "1990m01", dateformat"y\mm") == MonthlyDate(1990, 1)
 
@@ -179,8 +179,8 @@ CSV.write(io, df)
 @test QuarterlyDate("1990-07", "yyyy-mm") == QuarterlyDate(1990, 3)
 @test parse(QuarterlyDate,"1990-Q2", dateformat"yyyy-Qq") == QuarterlyDate(1990, 2)
 @test tryparse(QuarterlyDate,"1990-Q2", dateformat"yyyy-Qq") == QuarterlyDate(1990, 2)
-@test tryparse(QuarterlyDate,"1990-2", dateformat"yyyy-Qq") == nothing
-@test tryparse(QuarterlyDate,"1990-Q2", dateformat"yyyy-mm") == nothing
+@test tryparse(QuarterlyDate,"1990-2", dateformat"yyyy-Qq") === nothing
+@test tryparse(QuarterlyDate,"1990-Q2", dateformat"yyyy-mm") === nothing
 @test QuarterlyDate("1990-Q2") == QuarterlyDate(1990, 2)
 
 @test QuarterlyDate("1990-Q2", "yyyy-Qq") == QuarterlyDate(1990, 2)
@@ -279,6 +279,50 @@ CSV.write(io, df)
 # csv
 io = IOBuffer()
 df = (x = [YearlyDate(1990), YearlyDate(1991)], )
-CSV.write(io, df) 
+CSV.write(io, df)
 @test String(take!(io)) == "x\n1990\n1991\n"
+
+##############################################################################
+##
+## negative / proleptic years (year <= 0)
+##
+##############################################################################
+# accessors round-trip through value <= 0
+@test year(MonthlyDate(0, 12)) == 0
+@test month(MonthlyDate(0, 12)) == 12
+@test year(MonthlyDate(-5, 3)) == -5
+@test month(MonthlyDate(-5, 3)) == 3
+@test MonthlyDate(year(MonthlyDate(-5, 3)), month(MonthlyDate(-5, 3))) == MonthlyDate(-5, 3)
+
+@test year(QuarterlyDate(0, 4)) == 0
+@test quarter(QuarterlyDate(0, 4)) == 4
+@test year(QuarterlyDate(-5, 2)) == -5
+@test quarter(QuarterlyDate(-5, 2)) == 2
+@test QuarterlyDate(year(QuarterlyDate(-5, 2)), quarter(QuarterlyDate(-5, 2))) == QuarterlyDate(-5, 2)
+
+@test year(YearlyDate(0)) == 0
+@test year(YearlyDate(-5)) == -5
+
+# printing of negative years
+@test string(MonthlyDate(0, 12)) == "0000-12"
+@test string(MonthlyDate(-5, 3)) == "-0005-03"
+@test string(QuarterlyDate(-5, 2)) == "-0005-Q2"
+@test string(YearlyDate(-5)) == "-0005"
+
+# conversions across types stay correct for value <= 0
+@test QuarterlyDate(MonthlyDate(-5, 3)) == QuarterlyDate(-5, 1)
+@test YearlyDate(MonthlyDate(-5, 3)) == YearlyDate(-5)
+@test YearlyDate(QuarterlyDate(-5, 2)) == YearlyDate(-5)
+
+##############################################################################
+##
+## show / repr round-trips (2-arg show must be reconstructable and consistent)
+##
+##############################################################################
+@test repr(MonthlyDate(1990, 1)) == "MonthlyDate(\"1990-01\")"
+@test repr(QuarterlyDate(1990, 1)) == "QuarterlyDate(\"1990-Q1\")"
+@test repr(YearlyDate(1990)) == "YearlyDate(\"1990\")"
+@test MonthlyDate(parse(MonthlyDate, "1990-01")) == MonthlyDate(1990, 1)
+@test QuarterlyDate("1990-Q1") == QuarterlyDate(1990, 1)
+@test YearlyDate("1990") == YearlyDate(1990)
 
